@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Anthony Run Beta 1</title>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #102315;
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+#gameCanvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  background: #0b1a0f;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  background: rgba(16, 35, 21, 0.94);
+  backdrop-filter: blur(8px);
+}
+
+.hidden {
+  opacity: 0;
+  pointer-events: none !important;
+  display: none !important;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 3.6rem);
+  font-weight: 900;
+  color: #a3e635;
+  margin: 0 0 0.8rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 4px 20px rgba(163, 230, 53, 0.4);
+}
+
+p {
+  color: #86efac;
+  font-size: 1.05rem;
+  margin: 0 0 1.5rem;
+  text-align: center;
+  max-width: 90%;
+}
+
+.btn {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: #fff;
+  border: none;
+  padding: 14px 32px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px -5px rgba(22, 163, 74, 0.5);
+  transition: 0.2s;
+  margin: 6px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #14532d, #052e16);
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, #166534, #14532d);
+}
+
+/* HUD STYLES */
+#hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.hud-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.hud-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bar-container {
+  width: 220px;
+  height: 14px;
+  background: rgba(16, 35, 21, 0.85);
+  border: 2px solid rgba(134, 239, 172, 0.3);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  width: 100%;
+  transition: width 0.15s ease-out;
+}
+
+#hpBar {
+  background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+#xpBar {
+  background: linear-gradient(90deg, #eab308, #facc15);
+}
+
+.hud-text {
+  color: #f0fdf4;
+  font-weight: 800;
+  font-size: 0.9rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.cash-text {
+  color: #4ade80;
+  font-weight: 900;
+  font-size: 1.1rem;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+}
+
+#zoomBox {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.zbtn {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 2px solid rgba(134, 239, 172, 0.4);
+  background: rgba(16, 35, 21, 0.85);
+  color: #bbf7d0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+#waveBanner {
+  position: absolute;
+  top: 18%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 900;
+  color: #a3e635;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+/* CARDS & GRIDS */
+.card-grid, .upgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  width: 90%;
+  max-width: 950px;
+  max-height: 65vh;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.card {
+  background: rgba(22, 56, 31, 0.95);
+  border: 2px solid rgba(134, 239, 172, 0.2);
+  border-radius: 14px;
+  padding: 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: #a3e635;
+  box-shadow: 0 10px 25px rgba(163, 230, 53, 0.3);
+}
+
+.card h3 {
+  color: #f0fdf4;
+  margin: 8px 0 4px;
+  font-size: 1.15rem;
+}
+
+.card p {
+  color: #86efac;
+  font-size: 0.85rem;
+  margin: 8px 0 0;
+}
+
+.lvl-badge {
+  background: rgba(163, 230, 53, 0.2);
+  border: 1px solid #a3e635;
+  color: #a3e635;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-top: 4px;
+}
+
+.buff-tag {
+  color: #4ade80;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+.nerf-tag {
+  color: #f87171;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+/* SELECTION GRIDS (SKINS & WEAPONS) */
+.selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px;
+  width: 85%;
+  max-width: 800px;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.select-card, .skin-card {
+  background: rgba(22, 56, 31, 0.85);
+  border: 2px solid rgba(134, 239, 172, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.select-card.selected, .skin-card.selected {
+  border-color: #a3e635;
+  background: rgba(163, 230, 53, 0.2);
+  box-shadow: 0 0 15px rgba(163, 230, 53, 0.4);
+}
+
+.select-card h3, .skin-card h3 {
+  color: #fff;
+  margin: 10px 0 4px;
+  font-size: 1rem;
+}
+
+.select-card p, .skin-card p {
+  color: #86efac;
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.skin-card.locked {
+  opacity: 0.6;
+  border-color: #f87171;
+}
+
+.skin-preview {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #102315;
+  border: 2px solid;
+  overflow: hidden;
+}
+
+.password-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  align-items: center;
+  justify-content: center;
+}
+
+.secret-input {
+  background: rgba(10, 26, 15, 0.9);
+  border: 2px solid rgba(134, 239, 172, 0.4);
+  border-radius: 8px;
+  padding: 10px 16px;
+  color: #a3e635;
+  font-size: 1rem;
+  font-weight: 700;
+  outline: none;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.secret-input:focus {
+  border-color: #a3e635;
+  box-shadow: 0 0 10px rgba(163, 230, 53, 0.4);
+}
+
+.action-bar {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.action-btn {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border: 1px solid rgba(134, 239, 172, 0.3);
+  color: #e2e8f0;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.action-btn:hover:not(:disabled) {
+  border-color: #a3e635;
+  color: #a3e635;
+}
+
+.action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.action-btn.banish-btn {
+  background: linear-gradient(135deg, #451a03, #180800);
+  border-color: rgba(248, 113, 113, 0.4);
+  color: #fca5a5;
+}
+
+.action-btn.banish-btn:hover:not(:disabled) {
+  border-color: #f87171;
+  color: #fff;
+}
+
+#joystickZone {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  display: none;
+  pointer-events: none;
+  z-index: 4;
+}
+
+#joystickKnob {
+  position: absolute;
+  top: 35px;
+  left: 35px;
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  background: rgba(163, 230, 53, 0.5);
+  border: 2px solid #a3e635;
+}
+
+.instructions-box {
+  background: rgba(16, 35, 21, 0.7);
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(134, 239, 172, 0.2);
+  margin-bottom: 18px;
+  max-width: 500px;
+}
+
+.instructions-box li {
+  color: #bbf7d0;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+}
+</style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<div id="joystickZone"><div id="joystickKnob"></div></div>
+
+<div id="hud" class="hidden">
+  <div class="hud-top">
+    <div class="hud-group">
+      <div class="hud-text" id="hudHpText"></div>
+      <div class="bar-container"><div class="bar-fill" id="hpBar"></div></div>
+      <div class="hud-text" id="hudXpText"></div>
+      <div class="bar-container" style="height:8px"><div class="bar-fill" id="xpBar" style="width:0"></div></div>
+      <div class="cash-text" id="hudCashText">$0</div>
+    </div>
+    <div class="hud-group" style="align-items:flex-end">
+      <div class="hud-text" id="hudWave"></div>
+      <div class="hud-text" id="hudArchetype"></div>
+      <div class="hud-text" id="hudScore"></div>
+    </div>
+  </div>
+  <div id="waveBanner"></div>
+  <div id="zoomBox">
+    <button class="zbtn" onclick="G.zoomBy(1/1.25)">&minus;</button>
+    <span class="hud-text" id="hudZoom" style="min-width:44px;text-align:center">100%</span>
+    <button class="zbtn" onclick="G.zoomBy(1.25)">+</button>
+  </div>
+</div>
+
+<div id="mainMenu" class="screen">
+  <h1>Anthony Run</h1>
+  <p>Survive the endless horde. Press SPACEBAR to ROLL!</p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+    <button class="btn" onclick="UI.showStarter()">Start Game</button>
+    <button class="btn btn-secondary" onclick="UI.showSkins()">Skins</button>
+    <button class="btn btn-secondary" onclick="UI.show('howToPlayMenu')">How to Play</button>
+  </div>
+  <div style="margin-top:22px;color:#4ade80;font-weight:600" id="menuHighScore"></div>
+</div>
+
+<div id="starterMenu" class="screen hidden">
+  <h1>Choose Weapon</h1>
+  <p>Select your starting combat system for this run:</p>
+  <div class="selection-grid" id="starterGrid"></div>
+  <div style="margin-top:18px">
+    <button class="btn" onclick="G.start()">Begin Run</button>
+    <button class="btn btn-secondary" onclick="UI.show('mainMenu')">Back</button>
+  </div>
+</div>
+
+<div id="skinsMenu" class="screen hidden">
+  <h1>Select Skin</h1>
+  <p>Choose your character avatar or enter a secret passcode</p>
+  
+  <div class="password-section">
+    <input type="text" id="skinPassword" class="secret-input" placeholder="ENTER SECRET CODE">
+    <button class="btn" style="padding:10px 20px;font-size:0.9rem" onclick="UI.unlockSkinPass()">Unlock</button>
+  </div>
+
+  <div class="selection-grid" id="skinGrid"></div>
+  <button class="btn btn-secondary" style="margin-top:18px" onclick="UI.show('mainMenu')">Back</button>
+</div>
+
+<div id="howToPlayMenu" class="screen hidden">
+  <h1>How to Play</h1>
+  <div class="instructions-box"><ul>
+    <li><strong>Move:</strong> WASD / Arrow Keys, or touch joystick.</li>
+    <li><strong>Roll / Dash:</strong> Press <strong>SPACEBAR</strong> to roll rapidly in movement direction with full Invincibility (I-frames)!</li>
+    <li><strong>Combat:</strong> Automatic targeting. Collect XP and Cash drops.</li>
+    <li><strong>Upgrades:</strong> Infinite multi-level upgrades with exponential multipliers (×). Use cash to Reroll or Banish!</li>
+  </ul></div>
+  <button class="btn btn-secondary" onclick="UI.show('mainMenu')">Back</button>
+</div>
+
+<div id="upgradeScreen" class="screen hidden">
+  <h1 id="upgradeTitle">Level Up!</h1>
+  <p id="upgradeSub">Select an upgrade to strengthen your character</p>
+  <div class="card-grid" id="upgradeCards"></div>
+  <div class="action-bar">
+    <button class="action-btn" id="rerollBtn" onclick="G.rerollUpgrades()">Reroll ($50)</button>
+    <button class="action-btn banish-btn" id="banishBtn" onclick="G.toggleBanishMode()">Banish Upgrade ($100)</button>
+  </div>
+</div>
+
+<div id="gameOverScreen" class="screen hidden">
+  <h1 style="color:#f87171">Game Over</h1>
+  <p id="gameOverStats"></p>
+  <div style="display:flex;gap:12px">
+    <button class="btn" onclick="G.start()">Try Again</button>
+    <button class="btn btn-secondary" onclick="UI.show('mainMenu')">Main Menu</button>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+const AE = {
+  ctx: null, t: 0,
+  init() {
+    if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+  },
+  beep(a, b, d, type = 'square', v = .15) {
+    if (!this.ctx) return;
+    try {
+      const c = this.ctx, n = c.currentTime;
+      if (n - this.t < .03) return;
+      this.t = n;
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = type;
+      o.frequency.setValueAtTime(a, n);
+      o.frequency.exponentialRampToValueAtTime(b, n + d);
+      g.gain.setValueAtTime(v, n);
+      g.gain.exponentialRampToValueAtTime(.01, n + d);
+      o.connect(g); g.connect(c.destination);
+      o.start(n); o.stop(n + d);
+    } catch (e) {}
+  }
+};
+const SND = { 
+  ranged: [450, 100, .08, 'triangle'], 
+  shotgun: [250, 60, .12, 'sawtooth'], 
+  melee: [200, 70, .15, 'sawtooth'], 
+  laser: [700, 400, .1, 'sine'],
+  cash: [900, 1400, .15, 'sine']
+};
+
+const PASSCODES = {
+  'SECRET': 'void_anthony',
+  'SUPERANTHONY': 'void_anthony',
+  'GODMODE': 'god_anthony'
+};
+
+const Cfg = {
+  skins: [
+    { id: 'anthony_default', name: 'Anthony', color: '#4ade80', url: 'Skins/anthony.jpg', secret: false },
+    { id: 'cyborg_anthony', name: 'Cyborg Anthony', color: '#38bdf8', url: 'Skins/cyborg.png', secret: false },
+    { id: 'golden_anthony', name: 'Golden Champion', color: '#facc15', url: 'Skins/golden.png', secret: false },
+    { id: 'ninja_anthony', name: 'Shadow Ninja', color: '#a855f7', url: 'Skins/ninja.png', secret: false },
+    { id: 'void_anthony', name: 'Secret', color: '#ec4899', url: 'Enemies/franco.png', secret: true },
+    { id: 'god_anthony', name: 'Secret 2', color: '#06b6d4', url: 'Enemies/troy.png', secret: true }
+  ],
+  starters: [
+    { id: 'ranged', name: 'Ranged Blaster', desc: 'Fires fast energy bolts directly at enemies.', color: '#38bdf8' },
+    { id: 'shotgun', name: 'Scatter Shotgun', desc: 'Blasts a wide spread of 3 energetic pellets.', color: '#f59e0b' },
+    { id: 'melee', name: 'Energy Blade', desc: 'Slashes in a sweeping melee arc around you.', color: '#f87171' },
+    { id: 'laser', name: 'Plasma Beam', desc: 'Pierces through multiple foes with steady fire.', color: '#ec4899' },
+    { id: 'plasma', name: 'Orbital Pulse', desc: 'A rotating orb that crushes nearby foes.', color: '#facc15' }
+  ],
+  enemies: {
+    swarmer: { hp: 20, speed: 3.0, radius: 24, color: '#06b6d4', xp: 8, cash: 2, damage: 6, url: 'Enemies/kaden.png' },
+    zombie:  { hp: 35, speed: 2.3, radius: 30, color: '#22c55e', xp: 15, cash: 5, damage: 12, url: 'Enemies/franco.png' },
+    shooter: { hp: 45, speed: 1.7, radius: 28, color: '#f59e0b', xp: 28, cash: 10, damage: 15, url: 'Enemies/noah.png' },
+    brute:   { hp: 130, speed: 1.2, radius: 38, color: '#ef4444', xp: 65, cash: 25, damage: 24, url: 'Enemies/troy.png' },
+    boss:    { hp: 450, speed: 0.9, radius: 50, color: '#a855f7', xp: 150, cash: 75, damage: 45, url: 'Enemies/troy.png'}
+  }
+};
+
+// Expanded Infinite Upgrades with Multiplier (×) Notation
+const UPG = [
+  { id: 'speed', name: 'Adrenaline Surge', desc: 'Multiplies movement speed, decreases Max HP.', maxLvl: Infinity, buffType: 'speed', baseBuff: 1.15, buffMult: 1.08, nerfType: 'maxHp', baseNerf: 0.90, nerfMult: 0.97, buffFmt: v => `×${v.toFixed(2)} Speed`, nerfFmt: v => `×${v.toFixed(2)} Max HP` },
+  { id: 'armor', name: 'Titan Armor', desc: 'Multiplies Max HP & heals, reduces speed.', maxLvl: Infinity, buffType: 'maxHp', baseBuff: 35, buffMult: 1.25, nerfType: 'speed', baseNerf: 0.92, nerfMult: 0.98, buffFmt: v => `+${Math.round(v)} Max HP`, nerfFmt: v => `×${v.toFixed(2)} Speed` },
+  { id: 'regen', name: 'Regen Core', desc: 'Increases HP regen, reduces damage multiplier.', maxLvl: Infinity, buffType: 'regen', baseBuff: 1.5, buffMult: 1.25, nerfType: 'damage', baseNerf: 0.92, nerfMult: 0.98, buffFmt: v => `+${v.toFixed(1)} HP/s`, nerfFmt: v => `×${v.toFixed(2)} Damage` },
+  { id: 'damage', name: 'Heavy Impact', desc: 'Multiplies weapon damage, slows attack speed.', maxLvl: Infinity, buffType: 'damage', baseBuff: 1.25, buffMult: 1.12, nerfType: 'attackSpeed', baseNerf: 1.10, nerfMult: 1.05, buffFmt: v => `×${v.toFixed(2)} Damage`, nerfFmt: v => `×${v.toFixed(2)} Fire Rate` },
+  { id: 'overclock', name: 'Rapid Overclock', desc: 'Multiplies attack speed, reduces damage.', maxLvl: Infinity, buffType: 'attackSpeed', baseBuff: 0.85, buffMult: 0.95, nerfType: 'damage', baseNerf: 0.92, nerfMult: 0.98, buffFmt: v => `×${v.toFixed(2)} Fire Rate`, nerfFmt: v => `×${v.toFixed(2)} Damage` },
+  { id: 'magnet', name: 'Magnet Core', desc: 'Multiplies XP/Cash pickup range.', maxLvl: Infinity, buffType: 'pickup', baseBuff: 50, buffMult: 1.2, nerfType: 'regen', baseNerf: -0.2, nerfMult: 1.1, buffFmt: v => `+${Math.round(v)} Range`, nerfFmt: v => `${v.toFixed(1)} HP/s` },
+  { id: 'bounty', name: 'Bounty Hunter', desc: 'Multiplies Cash earned from drops.', maxLvl: Infinity, buffType: 'cashMult', baseBuff: 1.35, buffMult: 1.2, nerfType: 'enemyHpMult', baseNerf: 1.10, nerfMult: 1.05, buffFmt: v => `×${v.toFixed(2)} Cash Value`, nerfFmt: v => `×${v.toFixed(2)} Enemy HP` },
+  { id: 'lucky', name: 'Lucky Loot', desc: 'Multiplies cash drop frequency.', maxLvl: Infinity, buffType: 'cashChance', baseBuff: 1.25, buffMult: 1.15, nerfType: 'spawnRate', baseNerf: 1.10, nerfMult: 1.05, buffFmt: v => `×${v.toFixed(2)} Drop Chance`, nerfFmt: v => `×${v.toFixed(2)} Spawn Rate` },
+  { id: 'greed', name: 'Greed Curse', desc: 'Massive cash multiplier with harsher enemy scaling.', maxLvl: Infinity, buffType: 'cashMult', baseBuff: 1.6, buffMult: 1.3, nerfType: 'enemyDmgMult', baseNerf: 1.15, nerfMult: 1.08, buffFmt: v => `×${v.toFixed(2)} Cash Drop`, nerfFmt: v => `×${v.toFixed(2)} Enemy Dmg` },
+  { id: 'vampire', name: 'Healing Orbs', desc: 'Chance for enemies to drop healing hearts on death (Max 100%).', maxLvl: 5, buffType: 'healingOrbs', baseBuff: 0.20, buffMult: 1.25, nerfType: 'maxHp', baseNerf: -10, nerfMult: 1.2, buffFmt: v => `+${Math.round(Math.min(1, v) * 100)}% Drop Chance`, nerfFmt: v => `${Math.round(v)} Max HP` },
+  { id: 'thorns', name: 'Thorn Mail', desc: 'Reflects a percentage of incoming damage back at enemies.', maxLvl: 10, buffType: 'thorns', baseBuff: 0.05, buffMult: 1.2, nerfType: 'speed', baseNerf: 0.96, nerfMult: 0.99, buffFmt: v => `${Math.round(Math.min(0.25, v) * 100)}% Dmg Reflection`, nerfFmt: v => `×${v.toFixed(2)} Speed` },
+  { id: 'crit', name: 'Critical Strike', desc: 'Adds critical hit chance for 2.5x damage.', maxLvl: Infinity, buffType: 'critChance', baseBuff: 0.08, buffMult: 1.2, nerfType: 'attackSpeed', baseNerf: 1.08, nerfMult: 1.04, buffFmt: v => `+${Math.round(v * 100)}% Crit Chance`, nerfFmt: v => `×${v.toFixed(2)} Fire Rate` },
+  { id: 'pierce', name: 'Bullet Piercer', desc: 'Projectiles pierce through extra targets.', maxLvl: Infinity, buffType: 'pierce', baseBuff: 1, buffMult: 1.5, nerfType: 'damage', baseNerf: 0.92, nerfMult: 0.97, buffFmt: v => `+${Math.round(v)} Pierce Count`, nerfFmt: v => `×${v.toFixed(2)} Damage` },
+  { id: 'aoe', name: 'Zone Amplifier', desc: 'Increases melee slash and aura radius.', maxLvl: Infinity, buffType: 'aoeSize', baseBuff: 1.2, buffMult: 1.15, nerfType: 'speed', baseNerf: 0.95, nerfMult: 0.98, buffFmt: v => `×${v.toFixed(2)} Area Size`, nerfFmt: v => `×${v.toFixed(2)} Speed` },
+  { id: 'frost', name: 'Frost Aura', desc: 'Slows nearby enemy movement speeds.', maxLvl: Infinity, buffType: 'frost', baseBuff: 0.92, buffMult: 0.95, nerfType: 'damage', baseNerf: 0.95, nerfMult: 0.98, buffFmt: v => `-${Math.round((1 - v) * 100)}% Enemy Slow`, nerfFmt: v => `×${v.toFixed(2)} Damage` }
+];
+
+const WEAPONS = {
+  ranged: [400, 9.5, 24, 5, 0, 90, [0]],
+  shotgun: [620, 8.5, 16, 4, 0, 60, [-.25, 0, .25]],
+  laser: [200, 14, 15, 6, 3, 75, [0]]
+};
+
+const Skins = {};
+Cfg.skins.forEach(s => { 
+  if (s.url) { 
+    const i = new Image(); 
+    i.onload = () => Skins[s.id] = i; 
+    i.src = s.url; 
+  } 
+});
+
+const EnemyImages = {};
+Object.keys(Cfg.enemies).forEach(key => {
+  const eData = Cfg.enemies[key];
+  if (eData.url) {
+    const img = new Image();
+    img.onload = () => EnemyImages[key] = img;
+    img.src = eData.url;
+  }
+});
+
+const UI = {
+  screens: ['mainMenu', 'starterMenu', 'skinsMenu', 'howToPlayMenu', 'upgradeScreen', 'gameOverScreen'],
+  unlockedSkins: ['anthony_default', 'cyborg_anthony', 'golden_anthony', 'ninja_anthony'],
+
+  initSkins() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('anthony_unlocked_skins') || '[]');
+      saved.forEach(s => { if (!this.unlockedSkins.includes(s)) this.unlockedSkins.push(s); });
+    } catch (e) {}
+  },
+
+  show(id) {
+    this.screens.forEach(s => $(s).classList.toggle('hidden', s !== id));
+    if (id === 'mainMenu') {
+      G.state = 'menu';
+      $('hud').classList.add('hidden');$('joystickZone').style.display = 'none';
+      let hs = 0; try { hs = localStorage.getItem('anthony_highscore') || 0; } catch (e) {}
+      $('menuHighScore').textContent = 'High Score: ' + hs;
+    }
+  },
+
+  showStarter() {
+    this.show('starterMenu');
+    this.grid($('starterGrid'), Cfg.starters, G.starter, id => { G.starter = id; this.showStarter(); }, true);
+  },
+
+  showSkins() {
+    this.initSkins();
+    this.show('skinsMenu');
+    const availableSkins = Cfg.skins.filter(s => !s.secret || this.unlockedSkins.includes(s.id));
+    this.skinGrid($('skinGrid'), availableSkins, G.skin, id => { G.skin = id; this.showSkins(); });
+  },
+
+  unlockSkinPass() {
+    const code = ($('skinPassword').value || '').trim().toUpperCase();
+    const skinId = PASSCODES[code];
+    if (skinId && !this.unlockedSkins.includes(skinId)) {
+      this.unlockedSkins.push(skinId);
+      try { localStorage.setItem('anthony_unlocked_skins', JSON.stringify(this.unlockedSkins)); } catch (e) {}
+      alert('Secret Skin Unlocked!');
+      $('skinPassword').value = '';
+      this.showSkins();
+    } else if (this.unlockedSkins.includes(skinId)) {
+      alert('Skin already unlocked!');
+    } else {
+      alert('Invalid Passcode!');
+    }
+  },
+
+  grid(el, list, selected, onPick, withDesc) {
+    el.innerHTML = '';
+    list.forEach(it => {
+      const d = document.createElement('div');
+      d.className = 'select-card' + (selected === it.id ? ' selected' : '');
+      d.onclick = () => onPick(it.id);
+      const previewContent = it.url 
+        ? `<img src="${it.url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` 
+        : `<div style="width:28px;height:28px;border-radius:50%;background:${it.color}"></div>`;
+      d.innerHTML = `<div class="skin-preview" style="border-color:${it.color}">${previewContent}</div><h3>${it.name}</h3>${withDesc ? `<p>${it.desc}</p>` : ''}`;
+      el.appendChild(d);
+    });
+  },
+
+  skinGrid(el, list, selected, onPick) {
+    el.innerHTML = '';
+    list.forEach(it => {
+      const isUnlocked = this.unlockedSkins.includes(it.id);
+      const d = document.createElement('div');
+      d.className = 'skin-card' + (selected === it.id ? ' selected' : '') + (!isUnlocked ? ' locked' : '');
+      if (isUnlocked) d.onclick = () => onPick(it.id);
+      
+      const previewContent = it.url 
+        ? `<img src="${it.url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` 
+        : `<div style="width:28px;height:28px;border-radius:50%;background:${it.color}"></div>`;
+
+      d.innerHTML = `<div class="skin-preview" style="border-color:${it.color}">${previewContent}</div>
+                     <h3>${it.name}</h3>
+                     <p>${isUnlocked ? (selected === it.id ? 'Selected' : 'Click to Equip') : 'Locked (Secret)'}</p>`;
+      el.appendChild(d);
+    });
+  },
+
+  upgrade() {
+    G.state = 'upgrade';
+    $('upgradeScreen').classList.remove('hidden');$('upgradeTitle').textContent = G.banishMode ? 'SELECT UPGRADE TO BANISH' : `Level ${G.p.level} Reached!`;
+    $('upgradeSub').textContent = G.banishMode ? 'Click an upgrade to banish it for this match.' : 'Choose an upgrade to apply:';
+
+    const rerollBtn = $('rerollBtn');
+    const banishBtn = $('banishBtn');
+    rerollBtn.textContent = `Reroll ($${G.rerollCost})`;
+    rerollBtn.disabled = G.cash < G.rerollCost;
+    banishBtn.textContent = G.banishMode ? 'Cancel Banish' : `Banish Upgrade ($${G.banishCost})`;
+    banishBtn.disabled = !G.banishMode && G.cash < G.banishCost;
+
+    const box = $('upgradeCards'); 
+    box.innerHTML = '';
+    G.opts.forEach((upgIdx, n) => {
+      const u = UPG[upgIdx];
+      const curLvl = G.upgLevels[u.id] || 0;
+      const nextLvl = curLvl + 1;
+
+      const curBuffVal = u.baseBuff * Math.pow(u.buffMult, nextLvl - 1);
+      const curNerfVal = u.baseNerf * Math.pow(u.nerfMult, nextLvl - 1);
+
+      const c = document.createElement('div');
+      c.className = 'card';
+      c.onclick = () => G.banishMode ? G.banishUpgrade(n) : G.pick(n);
+      c.innerHTML = `
+        <span class="lvl-badge">Lvl ${nextLvl}</span>
+        <h3>${u.name}</h3>
+        <p>${u.desc}</p>
+        <div class="buff-tag">BUFF: ${u.buffFmt(curBuffVal)}</div>
+        <div class="nerf-tag">NERF: ${u.nerfFmt(curNerfVal)}</div>
+        <p style="margin-top:10px;font-size:0.75rem;color:#a3e635">${G.banishMode ? 'Click to BANISH' : 'Press ' + (n + 1)}</p>
+      `;
+      box.appendChild(c);
+    });
+  },
+
+  over() {
+    $('hud').classList.add('hidden');$('joystickZone').style.display = 'none';
+    $('gameOverScreen').classList.remove('hidden');$('gameOverStats').textContent = `You reached Level ${G.p.level}, survived to Wave ${G.wave}, earned $${G.totalCashEarned} Cash, and scored ${G.score.toLocaleString()} points.`;
+    try { if (G.score > parseInt(localStorage.getItem('anthony_highscore') || '0')) localStorage.setItem('anthony_highscore', G.score); } catch (e) {}
+  },
+
+  banner(t) {
+    const b = $('waveBanner'); b.textContent = t; b.style.opacity = 1;
+    clearTimeout(this.bt); this.bt = setTimeout(() => b.style.opacity = 0, 1800);
+  },
+
+  hud() {
+    const p = G.p;
+    $('hudHpText').textContent = `HP: ${Math.max(0, Math.round(p.hp))}/${Math.round(p.maxHp)} (+${p.regen.toFixed(1)}/s Regen)`;
+    $('hpBar').style.width = Math.max(0, p.hp / p.maxHp * 100) + '\%';$('hudXpText').textContent = `Level ${p.level} (${p.xp} / ${p.maxXp} XP)`;
+    $('xpBar').style.width = Math.min(100, p.xp / p.maxXp * 100) + '\%';$('hudCashText').textContent = `$${G.cash}`;
+    $('hudWave').textContent = `Wave ${G.wave} · next in ${Math.max(0, Math.ceil(G.waveT))}s`;
+    $('hudArchetype').textContent = 'Weapon: ' + Cfg.starters.find(s => s.id === G.starter).name;
+    $('hudScore').textContent = `Score: ${G.score.toLocaleString()} · Foes: ${G.enemies.length}`;
+    $('hudZoom').textContent = Math.round(G.zt * 100) + '%';
+  }
+};
+
+const G = {
+  cv: $('gameCanvas'), ctx: null, state: 'menu', skin: 'anthony_default', starter: 'ranged',
+  W: 0, H: 0, dpr: 1, MW: 4800, MH: 3200,
+  score: 0, wave: 1, waveT: 45, spawnT: 0, pending: 0, opts: [],
+  cash: 0, totalCashEarned: 0, rerollCost: 50, banishCost: 100, banishMode: false,
+  upgLevels: {}, banishedUpgrades: [],
+  cashChanceBonus: 0.25, cashMult: 1.0, enemyHpMult: 1.0, enemyDmgMult: 1.0, spawnRateMult: 1.0,
+  vampireRate: 0, thornsDmg: 0, critChance: 0, extraPierce: 0, aoeMultiplier: 1.0, enemySlow: 0,
+  healingOrbsChance: 0, thornsReflection: 0,
+  zoom: 1, zt: 1, pat: null,
+  p: { x: 0, y: 0, r: 56, speed: 4.2, hp: 100, maxHp: 100, regen: .8, xp: 0, maxXp: 100, level: 1, dmg: 1, as: 1, pickup: 160, rolling: false, rollT: 0, rollCooldown: 0, rollAngle: 0, rollVx: 0, rollVy: 0, invincTimer: 0 },
+  keys: {}, joy: { a: 0, id: null, sx: 0, sy: 0, dx: 0, dy: 0 }, tch: new Map(), pz: null,
+  bullets: [], enemies: [], parts: [], orbs: [], cashPickups: [], texts: [], atkT: 0, orbA: 0, slash: 0, last: 0, hudT: 0,
+
+  init() {
+    this.ctx = this.cv.getContext('2d');
+    const t = 120, c = document.createElement('canvas'); c.width = c.height = t * 2;
+    const x = c.getContext('2d');
+    for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) {
+      const ox = i * t, oy = j * t;
+      x.fillStyle = (i + j) % 2 ? '#14361d' : '#1b4325'; x.fillRect(ox, oy, t, t);
+      x.fillStyle = '#2d6a4f'; x.beginPath(); x.moveTo(ox + 20, oy + 100); x.lineTo(ox + 47, oy + 60); x.lineTo(ox + 73, oy + 100); x.fill();
+      x.fillStyle = '#1e5138'; x.beginPath(); x.moveTo(ox + 60, oy + 33); x.lineTo(ox + 87, oy + 13); x.lineTo(ox + 113, oy + 33); x.fill();
+    }
+    this.pat = this.ctx.createPattern(c, 'repeat');
+
+    addEventListener('resize', () => this.resize()); this.resize();
+    addEventListener('blur', () => this.keys = {});
+    addEventListener('keydown', e => {
+      const k = e.key.toLowerCase();
+      if (k.startsWith('arrow')) e.preventDefault();
+      this.keys[k] = true;
+      if (k === '+' || k === '=') this.zoomBy(1.2);
+      if (k === '-' || k === '_') this.zoomBy(1 / 1.2);
+      if (this.state === 'upgrade' && ['1', '2', '3'].includes(k)) {
+        if (this.banishMode) this.banishUpgrade(+k - 1);
+        else this.pick(+k - 1);
+      }
+    });
+    addEventListener('keyup', e => this.keys[e.key.toLowerCase()] = false);
+    addEventListener('wheel', e => {
+      if (this.state === 'playing') { e.preventDefault(); this.zoomBy(e.deltaY < 0 ? 1.1 : 1 / 1.1); }
+    }, { passive: false });
+
+    const j = this.joy, zone = $('joystickZone'), knob = $('joystickKnob');
+    const pd = () => { const v = [...this.tch.values()]; return v.length > 1 ? Math.hypot(v[0][0] - v[1][0], v[0][1] - v[1][1]) : 0; };
+    this.cv.addEventListener('touchstart', e => {
+      AE.init();
+      for (const t of e.changedTouches) {
+        if (t.clientX < innerWidth / 2 && !j.a) {
+          j.a = 1; j.id = t.identifier; j.sx = t.clientX; j.sy = t.clientY;
+          zone.style.display = 'block'; zone.style.left = (t.clientX - 60) + 'px'; zone.style.top = (t.clientY - 60) + 'px';
+          knob.style.transform = 'none';
+        } else this.tch.set(t.identifier, [t.clientX, t.clientY]);
+      }
+      if (this.tch.size >= 2) this.pz = { d: pd(), z: this.zt };
+    });
+    this.cv.addEventListener('touchmove', e => {
+      for (const t of e.changedTouches) {
+        if (this.tch.has(t.identifier)) this.tch.set(t.identifier, [t.clientX, t.clientY]);
+        if (j.a && t.identifier === j.id) {
+          const dx = t.clientX - j.sx, dy = t.clientY - j.sy, d = Math.min(Math.hypot(dx, dy), 45), a = Math.atan2(dy, dx);
+          j.dx = Math.cos(a) * d / 45; j.dy = Math.sin(a) * d / 45;
+          knob.style.transform = `translate(${Math.cos(a) * d}px,${Math.sin(a) * d}px)`;
+        }
+      }
+      if (this.pz && this.tch.size >= 2 && this.pz.d) this.setZoom(this.pz.z * pd() / this.pz.d);
+    });
+    const end = e => {
+      for (const t of e.changedTouches) {
+        this.tch.delete(t.identifier);
+        if (j.a && t.identifier === j.id) { j.a = 0; j.dx = j.dy = 0; zone.style.display = 'none'; }
+      }
+      if (this.tch.size < 2) this.pz = null;
+    };
+    this.cv.addEventListener('touchend', end);
+    this.cv.addEventListener('touchcancel', end);
+
+    requestAnimationFrame(ts => this.loop(ts));
+  },
+
+  resize() {
+    this.W = innerWidth; this.H = innerHeight; this.dpr = Math.min(devicePixelRatio || 1, 2);
+    this.cv.width = this.W * this.dpr; this.cv.height = this.H * this.dpr;
+  },
+  setZoom(v) { this.zt = clamp(v, .4, 2); },
+  zoomBy(m) { this.setZoom(this.zt * m); },
+
+  start() {
+    AE.init();
+    UI.screens.forEach(s => $(s).classList.add('hidden'));
+    $('hud').classList.remove('hidden');
+    Object.assign(this.p, { x: this.MW / 2, y: this.MH / 2, speed: 4.2, hp: 100, maxHp: 100, regen: .8, xp: 0, maxXp: 100, level: 1, dmg: 1, as: 1, pickup: 160, rolling: false, rollT: 0, rollCooldown: 0, rollAngle: 0, invincTimer: 0 });
+    
+    this.score = 0; this.wave = 1; this.waveT = 45; this.spawnT = 0; this.pending = 0;
+    this.cash = 0; this.totalCashEarned = 0; this.rerollCost = 50; this.banishCost = 100; this.banishMode = false;
+    this.upgLevels = {}; this.banishedUpgrades = [];
+    this.cashChanceBonus = 0.25; this.cashMult = 1.0; this.enemyHpMult = 1.0; this.enemyDmgMult = 1.0; this.spawnRateMult = 1.0;
+    this.vampireRate = 0; this.thornsDmg = 0; this.critChance = 0; this.extraPierce = 0; this.aoeMultiplier = 1.0; this.enemySlow = 0;
+    
+    this.bullets = []; this.enemies = []; this.parts = []; this.orbs = []; this.cashPickups = []; this.texts = [];
+    this.atkT = 0; this.orbA = 0; this.slash = 0; this.hudT = 0;
+    this.zoom = this.zt = innerWidth < 900 ? .75 : 1;
+
+    for (let i = 0; i < 6; i++) this.spawn();
+    this.state = 'playing';
+    UI.hud();
+  },
+
+  generateUpgradeOptions() {
+    // Generate 3 completely independent random choices from the UPG array
+    this.opts = [];
+    while (this.opts.length < 3) {
+      const idx = Math.floor(Math.random() * UPG.length);
+      // Ensures the 3 choices on the screen aren't duplicates of each other
+      if (!this.opts.includes(idx)) {
+        this.opts.push(idx);
+      }
+    }
+  },
+
+  applyUpgrade(upg, nextLvl) {
+    const p = this.p;
+    const buffVal = upg.baseBuff * Math.pow(upg.buffMult, nextLvl - 1);
+    const nerfVal = upg.baseNerf * Math.pow(upg.nerfMult, nextLvl - 1);
+
+    const applyStat = (type, val) => {
+      if (type === 'speed') p.speed = clamp(p.speed * val, 2.0, 12.0);
+      else if (type === 'damage') p.dmg *= val;
+      else if (type === 'attackSpeed') p.as = clamp(p.as * val, .15, 3);
+      else if (type === 'regen') p.regen = Math.max(0, p.regen + val);
+      else if (type === 'pickup') p.pickup += val;
+      else if (type === 'maxHp') { p.maxHp = Math.max(30, p.maxHp + val); p.hp = val > 0 ? p.maxHp : Math.min(p.hp, p.maxHp); }
+      else if (type === 'cashMult') this.cashMult *= val;
+      else if (type === 'cashChance') this.cashChanceBonus = clamp(this.cashChanceBonus + (val - 1), 0, 1);
+      else if (type === 'enemyHpMult') this.enemyHpMult *= val;
+      else if (type === 'enemyDmgMult') this.enemyDmgMult *= val;
+      else if (type === 'spawnRate') this.spawnRateMult *= val;
+      else if (type === 'vampire') this.vampireRate += val;
+      else if (type === 'thorns') {this.thornsReflection = clamp(this.thornsReflection + val, 0, 0.25);}
+      else if (type === 'critChance') this.critChance = clamp(this.critChance + val, 0, 1);
+      else if (type === 'pierce') this.extraPierce += Math.round(val);
+      else if (type === 'aoeSize') this.aoeMultiplier *= val;
+      else if (type === 'frost') this.enemySlow = Math.max(this.enemySlow, (1 - val));
+      else if (type === 'healingOrbs') {
+        this.healingOrbsChance = clamp(this.healingOrbsChance + val, 0, 1.0);
+      }
+    };
+
+    applyStat(upg.buffType, buffVal);
+    applyStat(upg.nerfType, nerfVal);
+    this.upgLevels[upg.id] = nextLvl;
+  },
+
+  pick(n) {
+    if (this.state !== 'upgrade' || this.opts[n] === undefined) return;
+    const upg = UPG[this.opts[n]];
+    const curLvl = this.upgLevels[upg.id] || 0;
+    this.applyUpgrade(upg, curLvl + 1);
+
+    this.pending--;
+    this.banishMode = false;
+    if (this.pending > 0) {
+      this.generateUpgradeOptions();
+      UI.upgrade();
+    } else {
+      $('upgradeScreen').classList.add('hidden');
+      this.state = 'playing';
+      UI.hud();
+    }
+  },
+
+  rerollUpgrades() {
+    if (this.cash < this.rerollCost) return;
+    this.cash -= this.rerollCost;
+    this.rerollCost = Math.round(this.rerollCost * 1.5);
+    this.generateUpgradeOptions();
+    UI.upgrade();
+  },
+
+  toggleBanishMode() {
+    if (!this.banishMode && this.cash < this.banishCost) return;
+    this.banishMode = !this.banishMode;
+    UI.upgrade();
+  },
+
+  banishUpgrade(n) {
+    if (this.opts[n] === undefined) return;
+    const upg = UPG[this.opts[n]];
+    this.cash -= this.banishCost;
+    this.banishCost = Math.round(this.banishCost * 1.6);
+    this.banishedUpgrades.push(upg.id);
+    this.banishMode = false;
+    this.generateUpgradeOptions();
+    UI.upgrade();
+  },
+
+  spawn() {
+    const p = this.p, L = p.level, w = this.wave;
+    const pool = [['zombie', 5], ['swarmer', 4]];
+    if (L >= 3) pool.push(['shooter', 3]);
+    if (L >= 5) pool.push(['brute', 2 + Math.min(4, (L - 5) * .3)]);
+    if (L >= 8 || w >= 3) pool.push(['boss', 1]);
+
+    let r = Math.random() * pool.reduce((a, b) => a + b[1], 0), key = pool[0][0];
+    for (const q of pool) if ((r -= q[1]) <= 0) { key = q[0]; break; }
+    const c = Cfg.enemies[key];
+
+    const vr = Math.hypot(this.W, this.H) / 2 / this.zoom;
+    let x, y, n = 0;
+    do {
+      const a = Math.random() * 6.283, d = clamp(vr + 60 + Math.random() * 200, 550, 1500);
+      x = p.x + Math.cos(a) * d; y = p.y + Math.sin(a) * d;
+    } while ((x < 30 || y < 30 || x > this.MW - 30 || y > this.MH - 30) && ++n < 8);
+    x = clamp(x, 30, this.MW - 30); y = clamp(y, 30, this.MH - 30);
+
+    const hp = Math.round((c.hp * (1 + .12 * (L - 1)) + (w - 1) * 8) * this.enemyHpMult);
+    this.enemies.push({
+      x, y, hp, mhp: hp, r: c.radius, color: c.color,
+      speed: c.speed * (.95 + Math.random() * .1) + Math.min(1, (L - 1) * .04 + (w - 1) * .03),
+      xp: Math.round(c.xp * (1 + .05 * (L - 1))),
+      cash: Math.round(c.cash * this.cashMult),
+      dmg: c.damage * (1 + .05 * (L - 1)) * this.enemyDmgMult
+    });
+  },
+
+  hurt(e, d, col) {
+    let isCrit = Math.random() < this.critChance;
+    if (isCrit) { d *= 2.5; col = '#a855f7'; }
+    d = Math.round(d); 
+    e.hp -= d;
+
+    // Vampiric Leech heal
+    if (this.vampireRate > 0) {
+      const healed = d * this.vampireRate;
+      this.p.hp = Math.min(this.p.maxHp, this.p.hp + healed);
+    }
+
+    AE.beep(isCrit ? 900 : 120, isCrit ? 600 : 30, .08);
+    if (this.texts.length < 50) this.texts.push({ x: e.x, y: e.y - 15, t: (isCrit ? 'CRIT! ' : '') + d, c: col, life: 25 });
+    if (this.parts.length < 300) for (let i = 0; i < 3; i++) this.parts.push({ x: e.x, y: e.y, vx: (Math.random() - .5) * 3, vy: (Math.random() - .5) * 3, c: e.color, life: 18 });
+  },
+
+  update(dt) {
+    const f = dt / 16.667, s = dt / 1000, p = this.p, L = p.level, k = this.keys, st = this.starter;
+    p.hp = Math.min(p.maxHp, p.hp + p.regen * s);
+    if (p.invincTimer > 0) p.invincTimer -= dt;
+    if (p.rollCooldown > 0) p.rollCooldown -= f;
+    // Healing Orbs Pickups
+    for (let i = (this.healingOrbs || []).length; i--;) {
+      const h = this.healingOrbs[i], dx = p.x - h.x, dy = p.y - h.y, d2 = dx * dx + dy * dy;
+      if (d2 < p.pickup * p.pickup) {
+        const d = Math.sqrt(d2) || 1;
+        h.x += dx / d * 8 * f; h.y += dy / d * 8 * f;
+        if (d2 < (p.r + h.r) ** 2) {
+          AE.beep(880, 1320, .15, 'sine', .1);
+          p.hp = Math.min(p.maxHp, p.hp + 20);
+          if (this.texts.length < 50) this.texts.push({ x: p.x, y: p.y - 25, t: `+20 HP`, c: '#ef4444', life: 30 });
+          this.healingOrbs.splice(i, 1);
+        }
+      }
+    }
+
+    // Movement & Roll Logic
+    let mx = 0, my = 0;
+    if (k.w || k.arrowup) my--; if (k.s || k.arrowdown) my++;
+    if (k.a || k.arrowleft) mx--; if (k.d || k.arrowright) mx++;
+    if (this.joy.a) { mx = this.joy.dx; my = this.joy.dy; }
+    if (mx && my) { mx *= .7071; my *= .7071; }
+
+    // Roll trigger (Spacebar)
+    if ((k[' '] || k['spacebar']) && p.rollCooldown <= 0 && !p.rolling && (mx !== 0 || my !== 0)) {
+      p.rolling = true;
+      p.rollT = 22; // roll duration frames
+      p.rollCooldown = 60; // cooldown frames
+      p.invincTimer = 400; // I-frames during roll
+      const len = Math.hypot(mx, my) || 1;
+      p.rollVx = (mx / len) * (p.speed * 2.4);
+      p.rollVy = (my / len) * (p.speed * 2.4);
+    }
+
+    const pad = p.r + 12;
+    if (p.rolling) {
+      p.rollT -= f;
+      p.rollAngle += 0.45 * f;
+      p.x = clamp(p.x + p.rollVx * f, pad, this.MW - pad);
+      p.y = clamp(p.y + p.rollVy * f, pad, this.MH - pad);
+      if (this.parts.length < 300) this.parts.push({ x: p.x, y: p.y, vx: (Math.random() - .5) * 2, vy: (Math.random() - .5) * 2, c: '#a3e635', life: 12 });
+      if (p.rollT <= 0) p.rolling = false;
+    } else {
+      p.x = clamp(p.x + mx * p.speed * f, pad, this.MW - pad);
+      p.y = clamp(p.y + my * p.speed * f, pad, this.MH - pad);
+    }
+
+    // Weapons
+    this.atkT -= dt;
+    if (this.slash > 0) this.slash -= f;
+    if (st === 'plasma') {
+      this.orbA += .055 * f / p.as;
+      const ox = p.x + Math.cos(this.orbA) * (75 * this.aoeMultiplier), oy = p.y + Math.sin(this.orbA) * (75 * this.aoeMultiplier);
+      for (const e of this.enemies) {
+        const dx = e.x - ox, dy = e.y - oy, rr = (e.r + 12) * this.aoeMultiplier;
+        if (dx * dx + dy * dy < rr * rr) e.hp -= 1.5 * p.dmg * f;
+      }
+    } else if (this.atkT <= 0 && this.enemies.length) {
+      let near = this.enemies[0], md = Infinity;
+      for (const e of this.enemies) {
+        const d = (e.x - p.x) ** 2 + (e.y - p.y) ** 2;
+        if (d < md) { md = d; near = e; }
+      }
+      const ang = Math.atan2(near.y - p.y, near.x - p.x);
+      if (st === 'melee') {
+        const meleeRange = 105 * this.aoeMultiplier;
+        if (md > meleeRange * meleeRange) this.atkT = 60;
+        else {
+          this.atkT = 520 * p.as; this.slash = 12;
+          AE.beep(...SND.melee);
+          for (const e of this.enemies) {
+            const edx = e.x - p.x, edy = e.y - p.y;
+            if (edx * edx + edy * edy < (85 * this.aoeMultiplier) ** 2) this.hurt(e, 45 * p.dmg, '#f87171');
+          }
+        }
+      } else {
+        const w = WEAPONS[st];
+        this.atkT = w[0] * p.as;
+        AE.beep(...SND[st]);
+        w[6].forEach(o => {
+          const a = ang + o;
+          this.bullets.push({ x: p.x, y: p.y, vx: Math.cos(a) * w[1], vy: Math.sin(a) * w[1], dmg: w[2] * p.dmg, r: w[3] * this.aoeMultiplier, pi: w[4] + this.extraPierce, life: w[5], hit: [] });
+        });
+      }
+    }
+
+    // Waves & Spawns
+    this.waveT -= s;
+    if (this.waveT <= 0) {
+      this.waveT = 45; this.wave++; this.score += 200 * this.wave;
+      UI.banner('Wave ' + this.wave);
+    }
+    this.spawnT -= dt;
+    if (this.spawnT <= 0) {
+      this.spawnT = Math.max(120, (850 - L * 38 - this.wave * 12) / this.spawnRateMult);
+      const cap = Math.min(280, 28 + L * 8 + this.wave * 4);
+      for (let i = 1 + (L / 6 | 0); i-- && this.enemies.length < cap;) this.spawn();
+    }
+
+    // Bullets
+    for (let i = this.bullets.length; i--;) {
+      const b = this.bullets[i];
+      b.x += b.vx * f; b.y += b.vy * f; b.life -= f;
+      let rm = b.life <= 0;
+      if (!rm) for (const e of this.enemies) {
+        if (b.hit.includes(e)) continue;
+        const dx = b.x - e.x, dy = b.y - e.y, rr = e.r + b.r;
+        if (dx * dx + dy * dy < rr * rr) {
+          this.hurt(e, b.dmg, '#facc15'); b.hit.push(e);
+          if (b.pi > 0) b.pi--; else { rm = true; break; }
+        }
+      }
+      if (rm) this.bullets.splice(i, 1);
+    }
+
+    // Enemies Logic
+    for (let i = this.enemies.length; i--;) {
+      const e = this.enemies[i], dx = p.x - e.x, dy = p.y - e.y, d = Math.hypot(dx, dy) || 1;
+      let currentSpeed = e.speed * (1 - this.enemySlow);
+      e.x = clamp(e.x + dx / d * currentSpeed * f, e.r, this.MW - e.r);
+      e.y = clamp(e.y + dy / d * currentSpeed * f, e.r, this.MH - e.r);
+
+      if (d < e.r + p.r) {
+        if (p.invincTimer <= 0 && !p.rolling) {
+          const incomingDmg = e.dmg * s;
+          p.hp -= incomingDmg;
+
+          // Thorn Mail Reflection (up to 25% reflected back)
+          if (this.thornsReflection > 0) {
+            const reflectedDmg = (e.dmg * this.thornsReflection);
+            e.hp -= reflectedDmg;
+            if (this.texts.length < 50) this.texts.push({ x: e.x, y: e.y - 25, t: `⚡${Math.round(reflectedDmg)}`, c: '#38bdf8', life: 15 });
+          }
+        }
+      }
+
+      if (e.hp <= 0) {
+        this.score += e.xp * 12;
+        if (this.orbs.length > 300) this.orbs[0].v += e.xp; 
+        else this.orbs.push({ x: e.x, y: e.y, v: e.xp, r: 6 });
+
+        // Cash Drop
+        if (Math.random() < this.cashChanceBonus) {
+          if (this.cashPickups.length > 150) this.cashPickups[0].v += e.cash;
+          else this.cashPickups.push({ x: e.x, y: e.y, v: e.cash, r: 8 });
+        }
+
+        // Healing Orb Drop Chance (Capped at 100%)
+        if (Math.random() < this.healingOrbsChance) {
+          if (this.healingOrbs.length > 100) this.healingOrbs[0].v += 15;
+          else this.healingOrbs.push({ x: e.x, y: e.y, v: 15, r: 9 });
+        }
+
+        this.enemies.splice(i, 1);
+      }
+    }
+    if (p.hp <= 0) { this.state = 'over'; UI.over(); return; }
+
+    // XP Orbs Pickup
+    for (let i = this.orbs.length; i--;) {
+      const o = this.orbs[i], dx = p.x - o.x, dy = p.y - o.y, d2 = dx * dx + dy * dy;
+      if (d2 < p.pickup * p.pickup) {
+        const d = Math.sqrt(d2) || 1;
+        o.x += dx / d * 7 * f; o.y += dy / d * 7 * f;
+        if (d2 < (p.r + o.r) ** 2) {
+          AE.beep(660, 990, .12, 'sine', .1);
+          if (this.texts.length < 50) this.texts.push({ x: p.x, y: p.y - 20, t: `+${o.v} XP`, c: '#facc15', life: 25 });
+          p.xp += o.v; this.orbs.splice(i, 1);
+          while (p.xp >= p.maxXp) {
+            p.xp -= p.maxXp; 
+            p.level++; 
+            p.maxXp = Math.round(p.maxXp * 1.25);
+            p.maxHp += 20; 
+            p.hp = p.maxHp; 
+            p.regen += .25; 
+            this.pending++;
+          }
+        }
+      }
+    }
+
+    // Cash Pickups
+    for (let i = this.cashPickups.length; i--;) {
+      const c = this.cashPickups[i], dx = p.x - c.x, dy = p.y - c.y, d2 = dx * dx + dy * dy;
+      if (d2 < p.pickup * p.pickup) {
+        const d = Math.sqrt(d2) || 1;
+        c.x += dx / d * 8 * f; c.y += dy / d * 8 * f;
+        if (d2 < (p.r + c.r) ** 2) {
+          AE.beep(...SND.cash);
+          this.cash += c.v;
+          this.totalCashEarned += c.v;
+          if (this.texts.length < 50) this.texts.push({ x: p.x, y: p.y - 25, t: `+$${c.v}`, c: '#4ade80', life: 30 });
+          this.cashPickups.splice(i, 1);
+        }
+      }
+    }
+
+    for (let i = this.texts.length; i--;) { const t = this.texts[i]; t.y -= .8 * f; if ((t.life -= f) <= 0) this.texts.splice(i, 1); }
+    for (let i = this.parts.length; i--;) { const t = this.parts[i]; t.x += t.vx * f; t.y += t.vy * f; if ((t.life -= f) <= 0) this.parts.splice(i, 1); }
+
+    if (this.pending > 0) { 
+      this.generateUpgradeOptions(); // <-- FORCE A FRESH RANDOM ROLL EVERY TIME
+      UI.upgrade(); 
+      return; 
+    }
+    if ((this.hudT -= dt) <= 0) { this.hudT = 100; UI.hud(); }
+  },
+
+  render() {
+    const c = this.ctx, z = this.zoom, W = this.W, H = this.H, d = this.dpr, p = this.p;
+    c.setTransform(d, 0, 0, d, 0, 0);
+    c.fillStyle = '#0b1a0f'; c.fillRect(0, 0, W, H);
+    const vw = W / z, vh = H / z;
+    const cx = this.MW > vw ? clamp(p.x, vw / 2, this.MW - vw / 2) : this.MW / 2;
+    const cy = this.MH > vh ? clamp(p.y, vh / 2, this.MH - vh / 2) : this.MH / 2;
+    c.setTransform(z * d, 0, 0, z * d, (W / 2 - cx * z) * d, (H / 2 - cy * z) * d);
+
+    c.fillStyle = this.pat; c.fillRect(0, 0, this.MW, this.MH);
+    c.strokeStyle = '#a3e635'; c.lineWidth = 8; c.strokeRect(0, 0, this.MW, this.MH);
+
+    const x0 = cx - vw / 2 - 60, x1 = cx + vw / 2 + 60, y0 = cy - vh / 2 - 60, y1 = cy + vh / 2 + 60;
+    const vis = o => o.x > x0 && o.x < x1 && o.y > y0 && o.y < y1;
+    const circ = (x, y, r) => { c.beginPath(); c.arc(x, y, r, 0, 6.283); c.fill(); };
+
+    for (const o of this.orbs) if (vis(o)) {
+      c.fillStyle = 'rgba(234,179,8,.25)'; circ(o.x, o.y, o.r * 2);
+      c.fillStyle = '#facc15'; circ(o.x, o.y, o.r);
+    }
+    for (const h of (this.healingOrbs || [])) if (vis(h)) {
+      c.fillStyle = 'rgba(239,68,68,.3)'; circ(h.x, h.y, h.r * 1.8);
+      c.fillStyle = '#ef4444'; circ(h.x, h.y, h.r);
+    }
+
+    for (const cp of this.cashPickups) if (vis(cp)) {
+      c.fillStyle = 'rgba(74,222,128,.3)'; circ(cp.x, cp.y, cp.r * 1.8);
+      c.fillStyle = '#4ade80'; circ(cp.x, cp.y, cp.r);
+    }
+
+    for (const e of this.enemies) if (vis(e)) {
+      const enemyTypeKey = Object.keys(Cfg.enemies).find(k => Cfg.enemies[k].color === e.color);
+      const eImg = enemyTypeKey ? EnemyImages[enemyTypeKey] : null;
+
+      c.save();
+      c.translate(e.x, e.y);
+      if (eImg) {
+        c.drawImage(eImg, -e.r, -e.r, e.r * 2, e.r * 2);
+      } else {
+        c.fillStyle = e.color; circ(0, 0, e.r);
+        c.fillStyle = '#102315'; circ(0, 0, e.r * .45);
+      }
+      c.restore();
+
+      if (e.hp < e.mhp) {
+        c.fillStyle = 'rgba(0,0,0,.6)'; c.fillRect(e.x - e.r, e.y - e.r - 9, e.r * 2, 4);
+        c.fillStyle = '#f87171'; c.fillRect(e.x - e.r, e.y - e.r - 9, e.r * 2 * Math.max(0, e.hp / e.mhp), 4);
+      }
+    }
+
+    c.fillStyle = this.starter === 'laser' ? '#ec4899' : '#38bdf8';
+    for (const b of this.bullets) circ(b.x, b.y, b.r);
+
+    if (this.starter === 'plasma') {
+      const ox = p.x + Math.cos(this.orbA) * (75 * this.aoeMultiplier), oy = p.y + Math.sin(this.orbA) * (75 * this.aoeMultiplier);
+      c.fillStyle = 'rgba(250,204,21,.3)'; circ(ox, oy, 20 * this.aoeMultiplier);
+      c.fillStyle = '#fef08a'; circ(ox, oy, 11 * this.aoeMultiplier);
+    }
+
+    if (this.slash > 0) {
+      c.strokeStyle = `rgba(248,113,113,${this.slash / 12})`; c.lineWidth = 6;
+      c.beginPath(); c.arc(p.x, p.y, 85 * this.aoeMultiplier, 0, 6.283); c.stroke();
+    }
+
+    for (const t of this.parts) if (vis(t)) { c.globalAlpha = Math.max(0, t.life / 20); c.fillStyle = t.c; c.fillRect(t.x, t.y, 5, 5); }
+    c.globalAlpha = 1;
+
+    c.font = `bold ${Math.round(16 / clamp(z, .6, 1.4))}px Inter, sans-serif`;
+    c.lineWidth = 3; c.strokeStyle = 'rgba(0,0,0,.7)';
+    for (const t of this.texts) if (vis(t)) { 
+      c.strokeText(t.t, t.x - 10, t.y); 
+      c.fillStyle = t.c; 
+      c.fillText(t.t, t.x - 10, t.y); 
+    }
+
+    // Player rendering with rolling rotation & I-frame flash
+    const sk = Cfg.skins.find(s => s.id === this.skin) || Cfg.skins[0], img = Skins[this.skin];
+    c.save(); 
+    c.translate(p.x, p.y);
+    if (p.rolling) c.rotate(p.rollAngle);
+    if (p.invincTimer > 0 && Math.floor(Date.now() / 60) % 2 === 0) c.globalAlpha = 0.5;
+
+    if (img) c.drawImage(img, -p.r, -p.r, p.r * 2, p.r * 2);
+    else {
+      c.shadowBlur = 16; c.shadowColor = sk.color; c.fillStyle = sk.color; circ(0, 0, p.r);
+      c.shadowBlur = 0; c.fillStyle = '#102315'; circ(6, -4, 6);
+    }
+    c.restore();
+  },
+
+  loop(ts) {
+    requestAnimationFrame(t => G.loop(t));
+    const dt = Math.min(ts - (this.last || ts), 50); this.last = ts;
+    this.zoom += (this.zt - this.zoom) * Math.min(1, dt / 90);
+    if (this.state === 'playing') this.update(dt);
+    if (this.state !== 'menu') this.render();
+  }
+};
+
+addEventListener('load', () => { G.init(); UI.show('mainMenu'); });
+</script>
+</body>
+</html>
