@@ -1213,7 +1213,6 @@ window.CoopSystem = {
       for (const [uid, pData] of Object.entries(players)) {
         if (uid !== myUid) {
           this.remotePlayers[uid] = pData;
-          // Initialize interpolation object if missing
           if (!this.renderedPlayers[uid]) {
             this.renderedPlayers[uid] = { x: pData.x, y: pData.y, skin: pData.skin, username: pData.username };
           }
@@ -1225,8 +1224,8 @@ window.CoopSystem = {
         $('coopStatusBox').textContent = `Status: Connected to Room [${code}] (${count} player(s) online). Waiting for Host...`;
       }
 
-      // If host triggers game start, launch for everyone in room
-      if (roomData.gameStarted && G.state !== 'playing') {
+      // If host triggers game start, launch for everyone in room safely
+      if (roomData.gameStarted && G.state === 'menu') {
         G.start();
       }
     });
@@ -1236,7 +1235,6 @@ window.CoopSystem = {
 
   async hostStartGame() {
     if (!this.isHost || !this.currentRoomId) return;
-    // Broadcast game start signal to Firebase
     await update(ref(dbRealtime, `coop_rooms/${this.currentRoomId}`), {
       gameStarted: true
     });
@@ -1263,7 +1261,6 @@ window.CoopSystem = {
         this.renderedPlayers[uid] = { x: target.x, y: target.y, skin: target.skin, username: target.username };
       }
       const current = this.renderedPlayers[uid];
-      // Smoothly glide 25% of the distance every frame toward target coordinates
       current.x += (target.x - current.x) * 0.25;
       current.y += (target.y - current.y) * 0.25;
       current.skin = target.skin;
@@ -2005,27 +2002,26 @@ const G = {
     if (p.invincTimer > 0) p.invincTimer -= dt;
     if (p.rollCooldown > 0) p.rollCooldown -= f;
 
-    // Sync Co-Op position in real-time
-    // Render Co-Op Remote Players Smoothly
-if (window.CoopSystem && CoopSystem.isCoopActive) {
-  for (const [uid, rp] of Object.entries(CoopSystem.renderedPlayers)) {
-    c.save();
-    c.translate(rp.x, rp.y);
-    const rImg = Skins[rp.skin];
-    const rSkin = Cfg.skins.find(s => s.id === rp.skin) || Cfg.skins[0];
-    if (rImg) {
-      c.drawImage(rImg, -p.r, -p.r, p.r * 2, p.r * 2);
-    } else {
-      c.fillStyle = rSkin.color; c.beginPath(); c.arc(0, 0, p.r, 0, 6.283); c.fill();
-    }
-    c.restore();
+    if (window.CoopSystem && CoopSystem.isCoopActive) {
+      for (const [uid, rp] of Object.entries(CoopSystem.renderedPlayers)) {
+        c.save();
+        c.translate(rp.x, rp.y);
+        const rImg = Skins[rp.skin];
+        const rSkin = Cfg.skins.find(s => s.id === rp.skin) || Cfg.skins[0];
+        const playerRadius = 56; // Standard player radius fallback
+        if (rImg) {
+          c.drawImage(rImg, -playerRadius, -playerRadius, playerRadius * 2, playerRadius * 2);
+        } else {
+          c.fillStyle = rSkin.color; c.beginPath(); c.arc(0, 0, playerRadius, 0, 6.283); c.fill();
+        }
+        c.restore();
 
-    c.font = `bold 13px 'Plus Jakarta Sans', sans-serif`;
-    c.fillStyle = '#38bdf8';
-    c.textAlign = 'center';
-    c.fillText(rp.username || 'Ally', rp.x, rp.y - p.r - 8);
-  }
-}
+        c.font = `bold 13px 'Plus Jakarta Sans', sans-serif`;
+        c.fillStyle = '#38bdf8';
+        c.textAlign = 'center';
+        c.fillText(rp.username || 'Ally', rp.x, rp.y - playerRadius - 8);
+      }
+    }
     // Healing Orbs Pickups
     for (let i = (this.healingOrbs || []).length; i--;) {
       const h = this.healingOrbs[i], dx = p.x - h.x, dy = p.y - h.y, d2 = dx * dx + dy * dy;
