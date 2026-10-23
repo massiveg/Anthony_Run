@@ -746,6 +746,7 @@ p {
 </div>
 
 <!-- CO-OP LOBBY MENU -->
+<!-- CO-OP LOBBY MENU -->
 <div id="coopMenu" class="screen hidden">
   <h1>CO-OP MULTIPLAYER</h1>
   <p>Play together with friends in real-time rooms</p>
@@ -759,10 +760,13 @@ p {
       <button class="btn" style="flex:1" onclick="CoopSystem.createRoom()">Create Room</button>
       <button class="btn btn-secondary" style="flex:1" onclick="CoopSystem.joinRoom()">Join Room</button>
     </div>
-    <div id="coopStatusBox" style="color:var(--text-dim); font-size:0.9rem; margin-top:10px;">Status: Disconnected</div>
+    <div id="coopStatusBox" style="color:var(--text-dim); font-size:0.9rem; margin-top:6px;">Status: Disconnected</div>
+    
+    <!-- HOST START GAME BUTTON (Hidden for guests) -->
+    <button id="hostStartBtn" class="btn hidden" style="width:100%; margin-top:10px;" onclick="CoopSystem.hostStartGame()">HOST START GAME</button>
   </div>
   
-  <button class="btn btn-secondary" style="margin-top:18px" onclick="UI.show('mainMenu')">Back to Lobby</button>
+  <button class="btn btn-secondary" style="margin-top:14px" onclick="UI.show('mainMenu')">Back to Lobby</button>
 </div>
 
 <!-- LEADERBOARDS MENU -->
@@ -1142,27 +1146,33 @@ window.ReportSystem = {
 
 window.CoopSystem = {
   currentRoomId: null,
+  isHost: false,
   roomListeners: [],
-  remotePlayers: {},
+  remotePlayers: {}, // Stores target positions
+  renderedPlayers: {}, // Stores smoothly interpolated positions to eliminate flutter
   isCoopActive: false,
 
   async createRoom() {
     const code = $('coopRoomInput').value.trim().toUpperCase() || Math.random().toString(36).substring(2, 8).toUpperCase();
     $('coopRoomInput').value = code;
     this.currentRoomId = code;
+    this.isHost = true;
+    
     const uid = AuthSystem.currentUser ? AuthSystem.currentUser.uid : 'guest_' + Math.random().toString(36).substring(2, 6);
     
     const roomRef = ref(dbRealtime, `coop_rooms/${code}/players/${uid}`);
     await set(roomRef, {
       username: AuthSystem.currentUsername,
       skin: G.skin,
-      x: G.MW / 2 + 50,
+      x: G.MW / 2,
       y: G.MH / 2,
       hp: 100,
       active: true
     });
     onDisconnect(roomRef).remove();
-    $('coopStatusBox').textContent = `Status: Hosting Room [${code}]. Waiting for players...`;
+
+    $('coopStatusBox').textContent = `Status: Hosting Room [${code}]. You control game start.`;
+    $('hostStartBtn').classList.remove('hidden');
     this.startListening(code, uid);
     this.isCoopActive = true;
   },
@@ -1171,36 +1181,66 @@ window.CoopSystem = {
     const code = $('coopRoomInput').value.trim().toUpperCase();
     if (!code) { alert('Enter a valid room code'); return; }
     this.currentRoomId = code;
-    const uid = AuthSystem.currentUser ? AuthSystem.currentUser.uid : 'guest_' + Math.random().toString(36).substring(2, 6);
+    this.isHost = false;
+    $('hostStartBtn').classList.add('hidden');
 
+    const uid = AuthSystem.currentUser ? AuthSystem.currentUser.uid : 'guest_' + Math.random().toString(36).substring(2, 6);
     const roomRef = ref(dbRealtime, `coop_rooms/${code}/players/${uid}`);
     await set(roomRef, {
       username: AuthSystem.currentUsername,
       skin: G.skin,
-      x: G.MW / 2 - 50,
+      x: G.MW / 2,
       y: G.MH / 2,
       hp: 100,
       active: true
     });
     onDisconnect(roomRef).remove();
-    $('coopStatusBox').textContent = `Status: Joined Room [${code}] successfully!`;
+
+    $('coopStatusBox').textContent = `Status: Joined Room [${code}]. Waiting for Host to start...`;
     this.startListening(code, uid);
     this.isCoopActive = true;
   },
 
   startListening(code, myUid) {
-    const playersRef = ref(dbRealtime, `coop_rooms/${code}/players`);
-    const unsubscribe = onValue(playersRef, (snapshot) => {
-      const data = snapshot.val() || {};
+    const roomRef = ref(dbRealtime, `coop_rooms/${code}`);
+    
+    const unsubscribe = onValue(roomRef, (snapshot) => {
+      const roomData = snapshot.val() || {};
+      const players = roomData.players || {};
+      
       this.remotePlayers = {};
       let count = 0;
-      for (const [uid, pData] of Object.entries(data)) {
-        if (uid !== myUid) this.remotePlayers[uid] = pData;
+      for (const [uid, pData] of Object.entries(players)) {
+        if (uid !== myUid) {
+          this.remotePlayers[uid] = pData;
+          // Initialize interpolation object if missing
+          if (!this.renderedPlayers[uid]) {
+            this.renderedPlayers[uid] = { x: pData.x, y: pData.y, skin: pData.skin, username: pData.username };
+          }
+        }
         count++;
       }
-      $('coopStatusBox').textContent = `Status: Connected to Room [${code}] (${count} player(s) online)`;
+      
+      if (!this.isHost) {
+        $('coopStatusBox').textContent = `Status: Connected to Room [${code}] (${count} player(s) online). Waiting for Host...`;
+      }
+
+      // If host triggers game start, launch for everyone in room
+      if (roomData.gameStarted && G.state !== 'playing') {
+        G.start();
+      }
     });
+
     this.roomListeners.push(unsubscribe);
+  },
+
+  async hostStartGame() {
+    if (!this.isHost || !this.currentRoomId) return;
+    // Broadcast game start signal to Firebase
+    await update(ref(dbRealtime, `coop_rooms/${this.currentRoomId}`), {
+      gameStarted: true
+    });
+    G.start();
   },
 
   syncPosition() {
@@ -1215,6 +1255,22 @@ window.CoopSystem = {
     });
   },
 
+  // Smooth Interpolation (Lerp) to eliminate fluttering on remote screens
+  updateInterpolation() {
+    for (const uid in this.remotePlayers) {
+      const target = this.remotePlayers[uid];
+      if (!this.renderedPlayers[uid]) {
+        this.renderedPlayers[uid] = { x: target.x, y: target.y, skin: target.skin, username: target.username };
+      }
+      const current = this.renderedPlayers[uid];
+      // Smoothly glide 25% of the distance every frame toward target coordinates
+      current.x += (target.x - current.x) * 0.25;
+      current.y += (target.y - current.y) * 0.25;
+      current.skin = target.skin;
+      current.username = target.username;
+    }
+  },
+
   leaveRoom() {
     if (this.currentRoomId) {
       const uid = AuthSystem.currentUser ? AuthSystem.currentUser.uid : 'guest_local';
@@ -1222,7 +1278,10 @@ window.CoopSystem = {
     }
     this.isCoopActive = false;
     this.currentRoomId = null;
+    this.isHost = false;
     this.remotePlayers = {};
+    this.renderedPlayers = {};
+    $('hostStartBtn').classList.add('hidden');
   }
 };
 
@@ -1947,10 +2006,26 @@ const G = {
     if (p.rollCooldown > 0) p.rollCooldown -= f;
 
     // Sync Co-Op position in real-time
-    if (window.CoopSystem && CoopSystem.isCoopActive) {
-      if (Math.random() < 0.3) CoopSystem.syncPosition();
+    // Render Co-Op Remote Players Smoothly
+if (window.CoopSystem && CoopSystem.isCoopActive) {
+  for (const [uid, rp] of Object.entries(CoopSystem.renderedPlayers)) {
+    c.save();
+    c.translate(rp.x, rp.y);
+    const rImg = Skins[rp.skin];
+    const rSkin = Cfg.skins.find(s => s.id === rp.skin) || Cfg.skins[0];
+    if (rImg) {
+      c.drawImage(rImg, -p.r, -p.r, p.r * 2, p.r * 2);
+    } else {
+      c.fillStyle = rSkin.color; c.beginPath(); c.arc(0, 0, p.r, 0, 6.283); c.fill();
     }
+    c.restore();
 
+    c.font = `bold 13px 'Plus Jakarta Sans', sans-serif`;
+    c.fillStyle = '#38bdf8';
+    c.textAlign = 'center';
+    c.fillText(rp.username || 'Ally', rp.x, rp.y - p.r - 8);
+  }
+}
     // Healing Orbs Pickups
     for (let i = (this.healingOrbs || []).length; i--;) {
       const h = this.healingOrbs[i], dx = p.x - h.x, dy = p.y - h.y, d2 = dx * dx + dy * dy;
