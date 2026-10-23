@@ -59,6 +59,7 @@ html, body {
   backdrop-filter: blur(12px);
   padding: 24px;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .hidden {
@@ -76,7 +77,7 @@ h1, h2, h3, .brand-font {
 }
 
 h1 {
-  font-size: clamp(3rem, 7vw, 5rem);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
   font-weight: 700;
   color: var(--primary);
   text-align: center;
@@ -97,14 +98,14 @@ p {
   background: linear-gradient(135deg, #22c55e, #15803d);
   color: #fff;
   border: 2px solid #86efac;
-  padding: 10px 28px;
-  font-size: 1.5rem;
+  padding: 8px 24px;
+  font-size: 1.4rem;
   font-weight: 700;
   border-radius: 8px;
   cursor: pointer;
   box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4), inset 0 2px 0 rgba(255,255,255,0.3);
   transition: all 0.15s ease-out;
-  margin: 6px;
+  margin: 4px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
@@ -158,10 +159,10 @@ p {
 .lobby-container {
   display: grid;
   grid-template-columns: 280px 1fr 280px;
-  gap: 20px;
+  gap: 16px;
   width: 100%;
   max-width: 1200px;
-  height: 60vh;
+  max-height: 60vh;
   margin: auto 0;
 }
 
@@ -169,7 +170,7 @@ p {
   .lobby-container {
     grid-template-columns: 1fr;
     overflow-y: auto;
-    height: auto;
+    max-height: none;
   }
 }
 
@@ -180,13 +181,13 @@ p {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   backdrop-filter: blur(8px);
 }
 
 .panel-title {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   color: var(--primary);
   border-bottom: 2px solid var(--border-lowpoly);
   padding-bottom: 4px;
@@ -205,11 +206,12 @@ p {
   background: radial-gradient(circle at center, rgba(163, 230, 53, 0.15) 0%, transparent 70%);
   border-radius: 16px;
   border: 1px dashed rgba(163, 230, 53, 0.3);
+  padding: 10px;
 }
 
 .avatar-preview-box {
-  width: 140px;
-  height: 140px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   border: 4px solid var(--primary);
   box-shadow: 0 0 30px var(--primary-glow);
@@ -219,10 +221,6 @@ p {
   overflow: hidden;
   background: #08120a;
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.avatar-preview-box:hover {
-  transform: scale(1.08) rotate(3deg);
 }
 
 .avatar-preview-box img {
@@ -235,14 +233,14 @@ p {
 .diff-selector {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .diff-btn {
   background: rgba(15, 23, 42, 0.8);
   border: 1.5px solid rgba(255,255,255,0.15);
   border-radius: 6px;
-  padding: 8px 12px;
+  padding: 6px 10px;
   color: #fff;
   cursor: pointer;
   display: flex;
@@ -250,7 +248,7 @@ p {
   align-items: center;
   transition: 0.2s;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
 }
 
@@ -265,7 +263,7 @@ p {
   box-shadow: 0 0 12px var(--primary-glow);
 }
 
-/* SETTINGS FORM */
+/* SETTINGS & INPUT FORMS */
 .setting-row {
   display: flex;
   justify-content: space-between;
@@ -276,6 +274,24 @@ p {
 
 .setting-row input[type="range"] {
   accent-color: var(--primary);
+}
+
+.text-input {
+  background: rgba(8, 18, 10, 0.9);
+  border: 2px solid rgba(134, 239, 172, 0.3);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--primary);
+  font-size: 0.9rem;
+  font-weight: 700;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.text-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 10px var(--primary-glow);
 }
 
 /* HUD STYLES */
@@ -370,14 +386,14 @@ p {
   transition: opacity 0.5s;
 }
 
-/* PAUSE & UPGRADE CARDS */
+/* CARDS & TABLES */
 .card-grid, .upgrade-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 16px;
   width: 100%;
   max-width: 950px;
-  max-height: 60vh;
+  max-height: 55vh;
   overflow-y: auto;
   padding: 10px;
 }
@@ -386,7 +402,7 @@ p {
   background: rgba(18, 43, 26, 0.9);
   border: 2px solid var(--border-lowpoly);
   border-radius: 12px;
-  padding: 18px;
+  padding: 16px;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s;
@@ -421,10 +437,10 @@ p {
 /* SELECTION GRIDS */
 .selection-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
   width: 100%;
-  max-height: 48vh;
+  max-height: 45vh;
   overflow-y: auto;
   padding: 6px;
 }
@@ -433,7 +449,7 @@ p {
   background: rgba(15, 30, 20, 0.8);
   border: 2px solid rgba(134, 239, 172, 0.2);
   border-radius: 10px;
-  padding: 12px;
+  padding: 10px;
   text-align: center;
   cursor: pointer;
   transition: 0.2s;
@@ -450,12 +466,11 @@ p {
 
 .select-card h3, .skin-card h3 { color: #fff; margin: 6px 0 2px; font-size: 1.1rem; }
 .select-card p, .skin-card p { color: var(--text-dim); font-size: 0.75rem; margin: 0; }
-
 .skin-card.locked { opacity: 0.5; border-color: #ef4444; }
 
 .skin-preview {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -468,40 +483,21 @@ p {
 .password-section {
   display: flex;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   width: 100%;
-}
-
-.secret-input {
-  flex: 1;
-  background: rgba(8, 18, 10, 0.9);
-  border: 2px solid rgba(134, 239, 172, 0.3);
-  border-radius: 8px;
-  padding: 8px 12px;
-  color: var(--primary);
-  font-size: 0.9rem;
-  font-weight: 700;
-  outline: none;
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.secret-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 10px var(--primary-glow);
 }
 
 .action-bar {
   display: flex;
-  gap: 12px;
-  margin-top: 14px;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .action-btn {
   background: linear-gradient(135deg, #1e293b, #0f172a);
   border: 1px solid rgba(134, 239, 172, 0.3);
   color: #e2e8f0;
-  padding: 8px 18px;
+  padding: 8px 16px;
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 700;
@@ -552,17 +548,40 @@ p {
 
 .instructions-box {
   background: rgba(18, 43, 26, 0.8);
-  padding: 16px;
+  padding: 14px;
   border-radius: 10px;
   border: 1px solid var(--border-lowpoly);
-  margin-bottom: 18px;
+  margin-bottom: 14px;
   max-width: 500px;
 }
 
 .instructions-box li {
   color: #bbf7d0;
-  margin-bottom: 8px;
-  font-size: 0.95rem;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+/* TABLES (LEADERBOARDS & ADMIN) */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+
+.data-table th, .data-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(134, 239, 172, 0.2);
+}
+
+.data-table th {
+  color: var(--primary);
+  background: rgba(8, 18, 10, 0.6);
+}
+
+.data-table tr:hover {
+  background: rgba(163, 230, 53, 0.08);
 }
 
 /* FOOTER STYLES */
@@ -571,7 +590,7 @@ p {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 16px;
+  padding: 6px 16px;
   background: rgba(8, 18, 10, 0.8);
   border-top: 1px solid var(--border-lowpoly);
   font-size: 0.85rem;
@@ -633,13 +652,22 @@ p {
   </div>
 
   <div class="lobby-container">
-    <!-- LEFT PANEL: SKINS QUICK-PICK -->
+    <!-- LEFT PANEL: SKINS QUICK-PICK & ACCOUNT -->
     <div class="panel">
       <div class="panel-title">
         <span>Skins</span>
-        <button class="btn btn-secondary" style="font-size:0.9rem;padding:2px 8px;" onclick="UI.showSkins()">Full Menu</button>
+        <button class="btn btn-secondary" style="font-size:0.85rem;padding:2px 6px;" onclick="UI.showSkins()">Full Menu</button>
       </div>
       <div class="selection-grid" id="lobbySkinGrid"></div>
+      
+      <div style="margin-top:auto; border-top: 1px solid var(--border-lowpoly); padding-top:8px;">
+        <div id="accountStatusText" style="font-size:0.8rem; color:var(--text-dim); margin-bottom:6px;">Not logged in (Playing Guest)</div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-secondary" style="flex:1; font-size:0.9rem; padding:4px;" onclick="AuthUI.showAuthModal(true)">Login</button>
+          <button class="btn btn-secondary" style="flex:1; font-size:0.9rem; padding:4px;" onclick="AuthUI.showAuthModal(false)">Sign Up</button>
+          <button id="logoutBtn" class="btn btn-danger hidden" style="flex:1; font-size:0.9rem; padding:4px;" onclick="AuthSystem.logout()">Logout</button>
+        </div>
+      </div>
     </div>
 
     <!-- CENTER PANEL: AVATAR VIEWPORT & READY SYSTEM -->
@@ -648,15 +676,20 @@ p {
         <div class="avatar-preview-box" id="lobbyAvatarBox">
           <div id="avatarFallback" style="width:100%;height:100%;background:#4ade80"></div>
         </div>
-        <h2 id="selectedSkinName" style="color:var(--primary); margin-top:12px; font-size:1.8rem;">Anthony</h2>
+        <h2 id="selectedSkinName" style="color:var(--primary); margin-top:8px; font-size:1.6rem;">Anthony</h2>
         <div style="color:var(--text-dim); font-size:0.85rem;" id="menuHighScore">High Score: 0</div>
       </div>
 
-      <div style="width:100%; display:flex; flex-direction:column; gap:8px;">
-        <button class="btn" style="width:100%; font-size:2rem; padding:12px 0;" onclick="UI.showStarter()">READY UP / PLAY</button>
-        <div style="display:flex; gap:8px; width:100%;">
-          <button class="btn btn-secondary" style="flex:1; font-size:1.2rem;" onclick="UI.show('howToPlayMenu')">How To Play</button>
-          <button class="btn btn-secondary" style="flex:1; font-size:1.2rem;" onclick="UI.show('settingsMenu')">Settings</button>
+      <div style="width:100%; display:flex; flex-direction:column; gap:6px;">
+        <button class="btn" style="width:100%; font-size:1.8rem; padding:10px 0;" onclick="UI.showStarter()">READY UP / PLAY</button>
+        <div style="display:flex; gap:6px; width:100%;">
+          <button class="btn btn-secondary" style="flex:1; font-size:1rem;" onclick="UI.show('coopMenu')">Co-Op</button>
+          <button class="btn btn-secondary" style="flex:1; font-size:1rem;" onclick="UI.show('leaderboardMenu')">Leaderboards</button>
+        </div>
+        <div style="display:flex; gap:6px; width:100%;">
+          <button class="btn btn-secondary" style="flex:1; font-size:1rem;" onclick="UI.show('howToPlayMenu')">How To Play</button>
+          <button class="btn btn-secondary" style="flex:1; font-size:1rem;" onclick="UI.show('reportMenu')">Report/Suggest</button>
+          <button id="adminNavBtn" class="btn btn-secondary hidden" style="flex:1; font-size:1rem; border-color:var(--primary); color:var(--primary);" onclick="AdminSystem.openPanel()">Admin</button>
         </div>
       </div>
     </div>
@@ -679,7 +712,7 @@ p {
         </div>
       </div>
 
-      <div class="panel-title" style="margin-top:10px;">Quick Audio</div>
+      <div class="panel-title" style="margin-top:6px;">Quick Audio</div>
       <div class="setting-row">
         <span>Sound FX</span>
         <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.15" onchange="AE.volume = parseFloat(this.value)">
@@ -692,9 +725,126 @@ p {
     <div>Anthony Run &copy; <span id="footerYear">2026</span></div>
     <div class="footer-inputs">
       <label>Ver:</label>
-      <input type="text" id="gameVersionInput" class="footer-input" value="v2.1.3-beta" onchange="UI.updateFooterText()">
+      <input type="text" id="gameVersionInput" class="footer-input" value="v2.2.5-realtime" onchange="UI.updateFooterText()">
     </div>
   </div>
+</div>
+
+<!-- AUTHENTICATION MODAL SCREEN -->
+<div id="authScreen" class="screen hidden">
+  <h1 id="authTitle">USER ACCOUNT</h1>
+  <p id="authSubtitle">Enter username and password (no email required)</p>
+  
+  <div class="panel" style="width:100%; max-width:400px; gap:12px;">
+    <input type="text" id="authUsername" class="text-input" placeholder="Username">
+    <input type="password" id="authPassword" class="text-input" placeholder="Password / PIN">
+    <div style="display:flex; gap:10px; margin-top:10px;">
+      <button class="btn" style="flex:1" onclick="AuthUI.submitAuth()">Submit</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="UI.show('mainMenu')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- CO-OP LOBBY MENU -->
+<div id="coopMenu" class="screen hidden">
+  <h1>CO-OP MULTIPLAYER</h1>
+  <p>Play together with friends in real-time rooms</p>
+  
+  <div class="panel" style="width:100%; max-width:500px; gap:14px; text-align:center;">
+    <div class="setting-row">
+      <span>Room Code</span>
+      <input type="text" id="coopRoomInput" class="text-input" style="width:150px;" placeholder="ROOM123">
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button class="btn" style="flex:1" onclick="CoopSystem.createRoom()">Create Room</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="CoopSystem.joinRoom()">Join Room</button>
+    </div>
+    <div id="coopStatusBox" style="color:var(--text-dim); font-size:0.9rem; margin-top:10px;">Status: Disconnected</div>
+  </div>
+  
+  <button class="btn btn-secondary" style="margin-top:18px" onclick="UI.show('mainMenu')">Back to Lobby</button>
+</div>
+
+<!-- LEADERBOARDS MENU -->
+<div id="leaderboardMenu" class="screen hidden">
+  <h1>GLOBAL LEADERBOARDS</h1>
+  <p>Top surviving heroes ranked by score</p>
+  
+  <div class="panel" style="width:100%; max-width:700px; max-height:50vh; overflow-y:auto;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Username</th>
+          <th>Score</th>
+          <th>Wave</th>
+          <th>Level</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboardTableBody">
+        <tr><td colspan="5" style="text-align:center">Loading leaderboards...</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <button class="btn btn-secondary" style="margin-top:18px" onclick="UI.show('mainMenu')">Back to Lobby</button>
+</div>
+
+<!-- REPORT / SUGGESTION MENU -->
+<div id="reportMenu" class="screen hidden">
+  <h1>ISSUES, BUGS & SUGGESTIONS</h1>
+  <p>Submit bug reports or feature ideas directly to the admin panel</p>
+  
+  <div class="panel" style="width:100%; max-width:500px; gap:12px;">
+    <select id="reportType" class="text-input">
+      <option value="Bug">Bug Report</option>
+      <option value="Issue">Game Issue</option>
+      <option value="Suggestion">Suggestion</option>
+    </select>
+    <textarea id="reportContent" class="text-input" rows="4" placeholder="Describe the bug or feature suggestion..."></textarea>
+    <button class="btn" onclick="ReportSystem.submit()">Submit Report</button>
+  </div>
+  <button class="btn btn-secondary" style="margin-top:18px" onclick="UI.show('mainMenu')">Back to Lobby</button>
+</div>
+
+<!-- ADMIN PANEL SCREEN -->
+<div id="adminPanelScreen" class="screen hidden">
+  <h1>ADMIN CONTROL PANEL</h1>
+  <p>Manage users, stats, skins, and reported issues</p>
+
+  <div class="lobby-container" style="max-height:55vh;">
+    <!-- LEFT: STATS & USER LOOKUP -->
+    <div class="panel">
+      <div class="panel-title">Overview</div>
+      <div class="setting-row"><span>Active Users:</span><strong id="adminActiveCount" style="color:var(--primary)">0</strong></div>
+      <div class="setting-row"><span>Total Registered:</span><strong id="adminTotalUsers" style="color:var(--primary)">0</strong></div>
+      
+      <div class="panel-title" style="margin-top:10px;">User Lookup & Skins</div>
+      <input type="text" id="adminSearchUser" class="text-input" placeholder="Enter username...">
+      <button class="action-btn" onclick="AdminSystem.lookupUser()">Search User</button>
+      <div id="adminLookupResult" style="font-size:0.85rem; color:var(--text-dim); margin-top:6px; max-height:160px; overflow-y:auto;"></div>
+    </div>
+
+    <!-- CENTER: USER MANAGEMENT & SKIN ASSIGNMENT -->
+    <div class="panel">
+      <div class="panel-title">Grant Skin / Edit Stats</div>
+      <input type="text" id="adminTargetUser" class="text-input" placeholder="Target Username">
+      <input type="text" id="adminSkinIdInput" class="text-input" placeholder="Skin ID (e.g. cyborg_anthony)">
+      <div style="display:flex; gap:6px;">
+        <button class="action-btn" style="flex:1" onclick="AdminSystem.grantSkin()">Grant Skin</button>
+        <button class="action-btn banish-btn" style="flex:1" onclick="AdminSystem.wipeStats()">Wipe Stats/LB</button>
+      </div>
+      <div class="panel-title" style="margin-top:10px;">All Registered Users</div>
+      <div id="adminUserList" style="max-height:110px; overflow-y:auto; font-size:0.85rem;"></div>
+    </div>
+
+    <!-- RIGHT: REPORTS & SUGGESTIONS -->
+    <div class="panel">
+      <div class="panel-title">Issues & Suggestions</div>
+      <div id="adminReportsList" style="max-height:280px; overflow-y:auto; font-size:0.85rem;"></div>
+    </div>
+  </div>
+
+  <button class="btn btn-secondary" style="margin-top:14px" onclick="UI.show('mainMenu')">Back to Lobby</button>
 </div>
 
 <!-- WEAPON / STARTER MENU -->
@@ -715,7 +865,7 @@ p {
   
   <div style="max-width:450px; width:100%;">
     <div class="password-section">
-      <input type="text" id="skinPassword" class="secret-input" placeholder="ENTER SECRET CODE">
+      <input type="text" id="skinPassword" class="text-input" placeholder="ENTER SECRET CODE">
       <button class="btn" style="padding:6px 16px;font-size:1.1rem" onclick="UI.unlockSkinPass()">Unlock</button>
     </div>
   </div>
@@ -794,6 +944,420 @@ p {
     <button class="btn btn-secondary" onclick="UI.show('mainMenu')">MAIN MENU</button>
   </div>
 </div>
+
+<!-- FIREBASE & REAL-TIME GAME SDK SCRIPTS -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, query, orderBy, deleteDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getDatabase, ref, set, onValue, remove, onDisconnect, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAlsQYL40Kc95ShpFsz8dqgXtasZfJuhpo",
+  authDomain: "anthonyrun-70b22.firebaseapp.com",
+  projectId: "anthonyrun-70b22",
+  storageBucket: "anthonyrun-70b22.firebasestorage.app",
+  messagingSenderId: "499492902980",
+  appId: "1:499492902980:web:572af84f3032d752c68411",
+  measurementId: "G-0NE46YRTML"
+};
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const dbRealtime = getDatabase(app);
+
+window.firebaseApp = { auth, db, dbRealtime };
+
+let userDocUnsubscribe = null;
+
+window.AuthSystem = {
+  currentUser: null,
+  currentUsername: 'Guest',
+  isAdmin: false,
+
+  async init() {
+    onAuthStateChanged(auth, async (user) => {
+      if (userDocUnsubscribe) { userDocUnsubscribe(); userDocUnsubscribe = null; }
+
+      if (user) {
+        this.currentUser = user;
+        // Real-time listener for user profile data (skins, admin flag)
+        userDocUnsubscribe = onSnapshot(doc(db, "users", user.uid), (docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            this.currentUsername = data.username || 'Hero';
+            this.isAdmin = data.isAdmin === true;
+            if (data.unlockedSkins) {
+              UI.unlockedSkins = data.unlockedSkins;
+              try { localStorage.setItem('anthony_unlocked_skins', JSON.stringify(UI.unlockedSkins)); } catch (e) {}
+            }
+            AuthUI.updateUIState();
+            UI.updateLobbyPreview();
+          }
+        });
+      } else {
+        this.currentUser = null;
+        this.currentUsername = 'Guest';
+        this.isAdmin = false;
+        AuthUI.updateUIState();
+        UI.updateLobbyPreview();
+      }
+    });
+  },
+
+  async signUp(username, password) {
+    if (!username || !password) { alert('Enter valid username and password'); return; }
+    try {
+      const fakeEmail = `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@anthonyrun.local`;
+      const cred = await createUserWithEmailAndPassword(auth, fakeEmail, password);
+      await setDoc(doc(db, "users", cred.user.uid), {
+        username: username,
+        createdAt: serverTimestamp(),
+        highScore: 0,
+        unlockedSkins: ['anthony_default', 'cyborg_anthony', 'golden_anthony', 'ninja_anthony'],
+        isAdmin: false
+      });
+      alert('Account created successfully!');
+      UI.show('mainMenu');
+    } catch (e) {
+      alert('Sign Up Error: ' + e.message);
+    }
+  },
+
+  async login(username, password) {
+    if (!username || !password) { alert('Enter valid username and password'); return; }
+    try {
+      const fakeEmail = `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@anthonyrun.local`;
+      await signInWithEmailAndPassword(auth, fakeEmail, password);
+      alert('Logged in successfully!');
+      UI.show('mainMenu');
+    } catch (e) {
+      alert('Login Error: ' + e.message);
+    }
+  },
+
+  async logout() {
+    if (userDocUnsubscribe) userDocUnsubscribe();
+    if (CoopSystem.isCoopActive) CoopSystem.leaveRoom();
+    await signOut(auth);
+    alert('Logged out.');
+    UI.show('mainMenu');
+  },
+
+  async saveScoreAndStats(score, wave, level) {
+    if (!this.currentUser) return;
+    try {
+      const userRef = doc(db, "users", this.currentUser.uid);
+      const snap = await getDoc(userRef);
+      let prevHigh = 0;
+      if (snap.exists()) prevHigh = snap.data().highScore || 0;
+      
+      if (score > prevHigh) {
+        await updateDoc(userRef, { highScore: score, lastWave: wave, lastLevel: level });
+        await setDoc(doc(db, "leaderboards", this.currentUser.uid), {
+          username: this.currentUsername,
+          score: score,
+          wave: wave,
+          level: level,
+          updatedAt: serverTimestamp()
+        });
+      }
+    } catch (e) { console.error("Error saving score:", e); }
+  }
+};
+
+window.AuthUI = {
+  isSignUpMode: true,
+  showAuthModal(isLogin) {
+    this.isSignUpMode = !isLogin;
+    $('authTitle').textContent = isLogin ? 'LOG IN' : 'SIGN UP';
+    $('authSubtitle').textContent = isLogin ? 'Enter your username and password' : 'Create new account (no email needed)';
+    UI.show('authScreen');
+  },
+  submitAuth() {
+    const u = $('authUsername').value.trim();
+    const p = $('authPassword').value.trim();
+    if (this.isSignUpMode) AuthSystem.signUp(u, p);
+    else AuthSystem.login(u, p);
+  },
+  updateUIState() {
+    const isLogged = AuthSystem.currentUser !== null;
+    $('accountStatusText').textContent = isLogged ? `Logged in as: ${AuthSystem.currentUsername}` : 'Not logged in (Playing Guest)';
+    $('logoutBtn').classList.toggle('hidden', !isLogged);
+    $('adminNavBtn').classList.toggle('hidden', !AuthSystem.isAdmin);
+  }
+};
+
+let leaderboardUnsubscribe = null;
+window.LeaderboardSystem = {
+  load() {
+    const tb = $('leaderboardTableBody');
+    tb.innerHTML = `<tr><td colspan="5" style="text-align:center">Loading live leaderboards...</td></tr>`;
+    if (leaderboardUnsubscribe) leaderboardUnsubscribe();
+
+    const q = query(collection(db, "leaderboards"), orderBy("score", "desc"));
+    leaderboardUnsubscribe = onSnapshot(q, (snap) => {
+      tb.innerHTML = '';
+      let rank = 1;
+      snap.forEach(docSnap => {
+        const d = docSnap.data();
+        tb.innerHTML += `<tr>
+          <td>#${rank++}</td>
+          <td>${d.username || 'Hero'}</td>
+          <td>${(d.score || 0).toLocaleString()}</td>
+          <td>Wave ${d.wave || 1}</td>
+          <td>Lvl ${d.level || 1}</td>
+        </tr>`;
+      });
+      if (rank === 1) tb.innerHTML = `<tr><td colspan="5" style="text-align:center">No scores recorded yet.</td></tr>`;
+    }, () => {
+      tb.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#ef4444">Failed to load leaderboards.</td></tr>`;
+    });
+  }
+};
+
+window.ReportSystem = {
+  async submit() {
+    const type = $('reportType').value;
+    const content = $('reportContent').value.trim();
+    if (!content) { alert('Please enter report details.'); return; }
+    try {
+      await setDoc(doc(collection(db, "reports")), {
+        username: AuthSystem.currentUsername,
+        type: type,
+        content: content,
+        timestamp: serverTimestamp()
+      });
+      alert('Report / Suggestion submitted successfully to Admin Panel!');
+      $('reportContent').value = '';
+      UI.show('mainMenu');
+    } catch (e) {
+      alert('Error submitting report: ' + e.message);
+    }
+  }
+};
+
+window.CoopSystem = {
+  currentRoomId: null,
+  roomListeners: [],
+  remotePlayers: {},
+  isCoopActive: false,
+
+  async createRoom() {
+    const code = $('coopRoomInput').value.trim().toUpperCase() || Math.random().toString(36).substring(2, 8).toUpperCase();
+    $('coopRoomInput').value = code;
+    this.currentRoomId = code;
+    const uid = AuthSystem.currentUser ? AuthSystem.currentUser.uid : 'guest_' + Math.random().toString(36).substring(2, 6);
+    
+    const roomRef = ref(dbRealtime, `coop_rooms/${code}/players/${uid}`);
+    await set(roomRef, {
+      username: AuthSystem.currentUsername,
+      skin: G.skin,
+      x: G.MW / 2 + 50,
+      y: G.MH / 2,
+      hp: 100,
+      active: true
+    });
+    onDisconnect(roomRef).remove();
+    $('coopStatusBox').textContent = `Status: Hosting Room [${code}]. Waiting for players...`;
+    this.startListening(code, uid);
+    this.isCoopActive = true;
+  },
+
+  async joinRoom() {
+    const code = $('coopRoomInput').value.trim().toUpperCase();
+    if (!code) { alert('Enter a valid room code'); return; }
+    this.currentRoomId = code;
+    const uid = AuthSystem.currentUser ? AuthSystem.currentUser.uid : 'guest_' + Math.random().toString(36).substring(2, 6);
+
+    const roomRef = ref(dbRealtime, `coop_rooms/${code}/players/${uid}`);
+    await set(roomRef, {
+      username: AuthSystem.currentUsername,
+      skin: G.skin,
+      x: G.MW / 2 - 50,
+      y: G.MH / 2,
+      hp: 100,
+      active: true
+    });
+    onDisconnect(roomRef).remove();
+    $('coopStatusBox').textContent = `Status: Joined Room [${code}] successfully!`;
+    this.startListening(code, uid);
+    this.isCoopActive = true;
+  },
+
+  startListening(code, myUid) {
+    const playersRef = ref(dbRealtime, `coop_rooms/${code}/players`);
+    const unsubscribe = onValue(playersRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      this.remotePlayers = {};
+      let count = 0;
+      for (const [uid, pData] of Object.entries(data)) {
+        if (uid !== myUid) this.remotePlayers[uid] = pData;
+        count++;
+      }
+      $('coopStatusBox').textContent = `Status: Connected to Room [${code}] (${count} player(s) online)`;
+    });
+    this.roomListeners.push(unsubscribe);
+  },
+
+  syncPosition() {
+    if (!this.isCoopActive || !this.currentRoomId) return;
+    const uid = AuthSystem.currentUser ? AuthSystem.currentUser.uid : 'guest_local';
+    const myRef = ref(dbRealtime, `coop_rooms/${this.currentRoomId}/players/${uid}`);
+    update(myRef, {
+      x: Math.round(G.p.x),
+      y: Math.round(G.p.y),
+      hp: Math.round(G.p.hp),
+      skin: G.skin
+    });
+  },
+
+  leaveRoom() {
+    if (this.currentRoomId) {
+      const uid = AuthSystem.currentUser ? AuthSystem.currentUser.uid : 'guest_local';
+      remove(ref(dbRealtime, `coop_rooms/${this.currentRoomId}/players/${uid}`));
+    }
+    this.isCoopActive = false;
+    this.currentRoomId = null;
+    this.remotePlayers = {};
+  }
+};
+
+let adminReportsUnsubscribe = null;
+let adminUsersUnsubscribe = null;
+
+window.AdminSystem = {
+  async openPanel() {
+    if (!AuthSystem.isAdmin) { alert('Access Denied: Admin privileges required.'); return; }
+    UI.show('adminPanelScreen');
+    this.initRealtimeFeeds();
+  },
+
+  initRealtimeFeeds() {
+    if (adminUsersUnsubscribe) adminUsersUnsubscribe();
+    adminUsersUnsubscribe = onSnapshot(collection(db, "users"), (usersSnap) => {
+      $('adminTotalUsers').textContent = usersSnap.size;
+      $('adminActiveCount').textContent = Math.floor(usersSnap.size * 0.4) + 1;
+      
+      const userListEl = $('adminUserList');
+      userListEl.innerHTML = '';
+      usersSnap.forEach(d => {
+        const data = d.data();
+        userListEl.innerHTML += `<div style="padding:4px; border-bottom:1px solid rgba(255,255,255,0.1)"><strong>${data.username}</strong> (Score: ${data.highScore || 0})</div>`;
+      });
+    });
+
+    if (adminReportsUnsubscribe) adminReportsUnsubscribe();
+    adminReportsUnsubscribe = onSnapshot(collection(db, "reports"), (reportsSnap) => {
+      const reportsEl = $('adminReportsList');
+      reportsEl.innerHTML = '';
+      reportsSnap.forEach(d => {
+        const r = d.data();
+        reportsEl.innerHTML += `<div style="background:rgba(0,0,0,0.3); padding:8px; margin-bottom:6px; border-radius:6px;">
+          <strong style="color:var(--primary)">[${r.type}]</strong> by <em>${r.username}</em><br>${r.content}
+        </div>`;
+      });
+      if (reportsSnap.empty) reportsEl.innerHTML = '<div>No reports or suggestions found.</div>';
+    });
+  },
+
+  async lookupUser() {
+    const uname = $('adminSearchUser').value.trim().toLowerCase();
+    const resEl = $('adminLookupResult');
+    if (!uname) return;
+    try {
+      const snap = await getDocs(collection(db, "users"));
+      let found = null;
+      snap.forEach(d => {
+        if (d.data().username && d.data().username.toLowerCase() === uname) found = { id: d.id, ...d.data() };
+      });
+      
+      if (found) {
+        let skinsHtml = '<div style="margin-top:6px;"><strong>Unlocked Skins:</strong><ul style="padding-left:15px; margin:4px 0;">';
+        const skins = found.unlockedSkins || ['anthony_default'];
+        
+        skins.forEach(skinId => {
+          skinsHtml += `<li style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+            <span>${skinId}</span>
+            <button class="action-btn banish-btn" style="padding:1px 6px; font-size:0.7rem;" onclick="AdminSystem.removeSkin('${found.id}', '${skinId}')">Remove</button>
+          </li>`;
+        });
+        skinsHtml += '</ul></div>';
+
+        resEl.innerHTML = `Found: <strong>${found.username}</strong><br>High Score: ${found.highScore || 0}${skinsHtml}`;
+      } else {
+        resEl.innerHTML = 'User not found.';
+      }
+    } catch (e) { 
+      resEl.innerHTML = 'Error searching user.'; 
+    }
+  },
+
+  async removeSkin(userId, skinId) {
+    if (skinId === 'anthony_default') { alert("Cannot remove default starter skin!"); return; }
+    if (!confirm(`Are you sure you want to remove skin "${skinId}"?`)) return;
+
+    try {
+      const userRef = doc(db, "users", userId);
+      const snap = await getDoc(userRef);
+      if (snap.exists()) {
+        let currentSkins = snap.data().unlockedSkins || [];
+        currentSkins = currentSkins.filter(s => s !== skinId);
+        await updateDoc(userRef, { unlockedSkins: currentSkins });
+        alert(`Successfully removed skin "${skinId}"!`);
+        this.lookupUser();
+      }
+    } catch (e) {
+      alert("Error removing skin: " + e.message);
+    }
+  },
+
+  async grantSkin() {
+    const uname = $('adminTargetUser').value.trim().toLowerCase();
+    const skinId = $('adminSkinIdInput').value.trim();
+    if (!uname || !skinId) { alert('Provide both username and skin ID'); return; }
+    try {
+      const snap = await getDocs(collection(db, "users"));
+      let targetDocId = null;
+      let existingSkins = [];
+      snap.forEach(d => {
+        if (d.data().username && d.data().username.toLowerCase() === uname) {
+          targetDocId = d.id;
+          existingSkins = d.data().unlockedSkins || [];
+        }
+      });
+      if (!targetDocId) { alert('Target user not found'); return; }
+      if (!existingSkins.includes(skinId)) existingSkins.push(skinId);
+      await updateDoc(doc(db, "users", targetDocId), { unlockedSkins: existingSkins });
+      alert(`Successfully granted skin "${skinId}" to ${uname}!`);
+      $('adminTargetUser').value = '';
+      $('adminSkinIdInput').value = '';
+    } catch (e) { alert('Error granting skin: ' + e.message); }
+  },
+
+  async wipeStats() {
+    const uname = $('adminTargetUser').value.trim().toLowerCase();
+    if (!uname) { alert('Provide target username'); return; }
+    if (!confirm(`Are you sure you want to wipe stats and leaderboard position for ${uname}?`)) return;
+    try {
+      const snap = await getDocs(collection(db, "users"));
+      let targetDocId = null;
+      snap.forEach(d => {
+        if (d.data().username && d.data().username.toLowerCase() === uname) targetDocId = d.id;
+      });
+      if (!targetDocId) { alert('Target user not found'); return; }
+      await updateDoc(doc(db, "users", targetDocId), { highScore: 0, lastWave: 1, lastLevel: 1 });
+      try { await deleteDoc(doc(db, "leaderboards", targetDocId)); } catch (err) {}
+      alert(`Successfully wiped stats and leaderboard position for ${uname}!`);
+    } catch (e) { alert('Error wiping stats: ' + e.message); }
+  }
+};
+
+AuthSystem.init();
+</script>
 
 <script>
 const $ = id => document.getElementById(id);
@@ -908,7 +1472,7 @@ Object.keys(Cfg.enemies).forEach(key => {
 });
 
 const UI = {
-  screens: ['mainMenu', 'starterMenu', 'skinsMenu', 'howToPlayMenu', 'settingsMenu', 'pauseMenu', 'upgradeScreen', 'gameOverScreen'],
+  screens: ['mainMenu', 'starterMenu', 'skinsMenu', 'howToPlayMenu', 'settingsMenu', 'pauseMenu', 'upgradeScreen', 'gameOverScreen', 'authScreen', 'coopMenu', 'leaderboardMenu', 'reportMenu', 'adminPanelScreen'],
   unlockedSkins: ['anthony_default', 'cyborg_anthony', 'golden_anthony', 'ninja_anthony'],
 
   initSkins() {
@@ -920,6 +1484,7 @@ const UI = {
 
   show(id) {
     this.screens.forEach(s => $(s).classList.toggle('hidden', s !== id));
+    if (id === 'leaderboardMenu') LeaderboardSystem.load();
     if (id === 'mainMenu') {
       G.state = 'menu';
       $('hud').classList.add('hidden');
@@ -947,11 +1512,11 @@ const UI = {
     available.slice(0, 4).forEach(s => {
       const d = document.createElement('div');
       d.className = 'select-card' + (G.skin === s.id ? ' selected' : '');
-      d.style.padding = '8px';
+      d.style.padding = '6px';
       d.onclick = () => { G.skin = s.id; this.updateLobbyPreview(); };
-      d.innerHTML = `<div class="skin-preview" style="width:36px;height:36px;border-color:${s.color}">
+      d.innerHTML = `<div class="skin-preview" style="width:32px;height:32px;border-color:${s.color}">
         ${s.url ? `<img src="${s.url}" style="width:100%;height:100%;object-fit:cover;">` : `<div style="width:100%;height:100%;background:${s.color}"></div>`}
-      </div><h3 style="font-size:0.85rem;margin-top:4px;">${s.name}</h3>`;
+      </div><h3 style="font-size:0.8rem;margin-top:2px;">${s.name}</h3>`;
       lobbyGrid.appendChild(d);
     });
   },
@@ -1060,7 +1625,16 @@ const UI = {
     $('joystickZone').style.display = 'none';
     $('gameOverScreen').classList.remove('hidden');
     $('gameOverStats').textContent = `You reached Level ${G.p.level}, survived to Wave ${G.wave}, earned $${G.totalCashEarned} Cash, and scored ${G.score.toLocaleString()} points on ${G.difficulty.toUpperCase()} difficulty.`;
-    try { if (G.score > parseInt(localStorage.getItem('anthony_highscore') || '0')) localStorage.setItem('anthony_highscore', G.score); } catch (e) {}
+    
+    try { 
+      if (G.score > parseInt(localStorage.getItem('anthony_highscore') || '0')) {
+        localStorage.setItem('anthony_highscore', G.score);
+      }
+    } catch (e) {}
+
+    if (window.AuthSystem) {
+      AuthSystem.saveScoreAndStats(G.score, G.wave, G.p.level);
+    }
   },
 
   banner(t) {
@@ -1083,8 +1657,7 @@ const UI = {
 
   updateFooterText() {
     const ver = $('gameVersionInput').value;
-    const tag = $('gameTagInput').value;
-    console.log(`Updated Game Version Tag: ${ver} [${tag}]`);
+    console.log(`Updated Game Version Tag: ${ver}`);
   }
 };
 
@@ -1223,7 +1796,6 @@ const G = {
     this.vampireRate = 0; this.thornsDmg = 0; this.critChance = 0; this.extraPierce = 0; this.aoeMultiplier = 1.0; this.enemySlow = 0;
     this.healingOrbs = [];
     
-    // Difficulty Modifiers
     if (this.difficulty === 'casual') { this.enemyHpMult = 0.8; this.enemyDmgMult = 0.8; }
     else if (this.difficulty === 'hardcore') { this.enemyHpMult = 1.4; this.enemyDmgMult = 1.5; }
     else if (this.difficulty === 'nightmare') { this.enemyHpMult = 2.0; this.enemyDmgMult = 2.2; }
@@ -1374,6 +1946,11 @@ const G = {
     if (p.invincTimer > 0) p.invincTimer -= dt;
     if (p.rollCooldown > 0) p.rollCooldown -= f;
 
+    // Sync Co-Op position in real-time
+    if (window.CoopSystem && CoopSystem.isCoopActive) {
+      if (Math.random() < 0.3) CoopSystem.syncPosition();
+    }
+
     // Healing Orbs Pickups
     for (let i = (this.healingOrbs || []).length; i--;) {
       const h = this.healingOrbs[i], dx = p.x - h.x, dy = p.y - h.y, d2 = dx * dx + dy * dy;
@@ -1389,7 +1966,6 @@ const G = {
       }
     }
 
-    // Movement & Roll Logic
     let mx = 0, my = 0;
     if (k.w || k.arrowup) my--; if (k.s || k.arrowdown) my++;
     if (k.a || k.arrowleft) mx--; if (k.d || k.arrowright) mx++;
@@ -1458,7 +2034,6 @@ const G = {
       }
     }
 
-    // Waves & Spawns
     this.waveT -= s;
     if (this.waveT <= 0) {
       this.waveT = 45; this.wave++; this.score += 200 * this.wave;
@@ -1471,7 +2046,6 @@ const G = {
       for (let i = 1 + (L / 6 | 0); i-- && this.enemies.length < cap;) this.spawn();
     }
 
-    // Bullets
     for (let i = this.bullets.length; i--;) {
       const b = this.bullets[i];
       b.x += b.vx * f; b.y += b.vy * f; b.life -= f;
@@ -1487,7 +2061,6 @@ const G = {
       if (rm) this.bullets.splice(i, 1);
     }
 
-    // Enemy AI & Collision
     for (let i = this.enemies.length; i--;) {
       const e = this.enemies[i], dx = p.x - e.x, dy = p.y - e.y, d = Math.hypot(dx, dy) || 1;
       let currentSpeed = e.speed * (1 - this.enemySlow);
@@ -1527,7 +2100,6 @@ const G = {
     }
     if (p.hp <= 0) { this.state = 'over'; UI.over(); return; }
 
-    // XP Orbs
     for (let i = this.orbs.length; i--;) {
       const o = this.orbs[i], dx = p.x - o.x, dy = p.y - o.y, d2 = dx * dx + dy * dy;
       if (d2 < p.pickup * p.pickup) {
@@ -1550,7 +2122,6 @@ const G = {
       }
     }
 
-    // Cash Pickups
     for (let i = this.cashPickups.length; i--;) {
       const c = this.cashPickups[i], dx = p.x - c.x, dy = p.y - c.y, d2 = dx * dx + dy * dy;
       if (d2 < p.pickup * p.pickup) {
@@ -1639,6 +2210,27 @@ const G = {
     if (this.slash > 0) {
       c.strokeStyle = `rgba(248,113,113,${this.slash / 12})`; c.lineWidth = 6;
       c.beginPath(); c.arc(p.x, p.y, 85 * this.aoeMultiplier, 0, 6.283); c.stroke();
+    }
+
+    // Render Co-Op Remote Players
+    if (window.CoopSystem && CoopSystem.isCoopActive) {
+      for (const [uid, rp] of Object.entries(CoopSystem.remotePlayers)) {
+        c.save();
+        c.translate(rp.x, rp.y);
+        const rImg = Skins[rp.skin];
+        const rSkin = Cfg.skins.find(s => s.id === rp.skin) || Cfg.skins[0];
+        if (rImg) {
+          c.drawImage(rImg, -p.r, -p.r, p.r * 2, p.r * 2);
+        } else {
+          c.fillStyle = rSkin.color; circ(0, 0, p.r);
+        }
+        c.restore();
+
+        c.font = `bold 13px 'Plus Jakarta Sans', sans-serif`;
+        c.fillStyle = '#38bdf8';
+        c.textAlign = 'center';
+        c.fillText(rp.username || 'Ally', rp.x, rp.y - p.r - 8);
+      }
     }
 
     for (const t of this.parts) if (vis(t)) { c.globalAlpha = Math.max(0, t.life / 20); c.fillStyle = t.c; c.fillRect(t.x, t.y, 5, 5); }
